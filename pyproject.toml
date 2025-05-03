@@ -34,6 +34,7 @@ ignore = [
     "E402", # module-import-not-at-top-of-file
     # Prefer pyright's diagnostics
     "F401", # unused-import
+    "F821", # undefined name
     "F841", # unused-variable (assigned but not used)
     "F842", # unused-annotation (declaration)
 ]
@@ -44,3 +45,5 @@ reportAttributeAccessIssue = "none"
 reportUnusedParameter = "none"
 # Prefer Ruff's diagnostic
 reportRedeclaration = "none"
+# Disable because of one false positive.
+reportUnreachable = "none"
