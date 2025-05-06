@@ -1,10 +1,11 @@
-from rest_framework import generics, mixins, renderers
-from rest_framework.response import Response
+from rest_framework import viewsets
 
 from hyiptest.models import Question
 from hyiptest.serializers import QuestionSerializer
 
 
+'''
+# Old view that allowed to also render html templates.
 class QuestionList(mixins.ListModelMixin, generics.GenericAPIView):
     """
     List all questions.
@@ -26,3 +27,9 @@ class QuestionList(mixins.ListModelMixin, generics.GenericAPIView):
             data = {"question_list": queryset}
             return Response(data, template_name="hyiptest/question_list.html")
         return self.list(request, *args, **kwargs)
+'''
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer

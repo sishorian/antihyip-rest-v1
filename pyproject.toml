@@ -40,10 +40,14 @@ ignore = [
 ]
 
 [tool.basedpyright]
+# Prefer Ruff's diagnostic
+reportRedeclaration = "none"
+# Django
 typeCheckingMode = "standard"
 reportAttributeAccessIssue = "none"
 reportUnusedParameter = "none"
-# Prefer Ruff's diagnostic
-reportRedeclaration = "none"
-# Disable because of one false positive.
 reportUnreachable = "none"
+reportArgumentType = "none"
+reportAssignmentType = "none"
+reportIncompatibleMethodOverride = "none"
+reportFunctionMemberAccess = "none"
