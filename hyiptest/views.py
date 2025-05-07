@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from django.views import generic
 
-# Create your views here.
+from hyiptest.models import Question
+
+
+class QuestionListView(generic.ListView):
+    model = Question
+    paginate_by = 20
+
+
+class QuestionDetailView(generic.DetailView):
+    model = Question
