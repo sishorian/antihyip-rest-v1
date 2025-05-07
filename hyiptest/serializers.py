@@ -3,7 +3,7 @@ from rest_framework import serializers
 from hyiptest.models import Question
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Question
-        fields = ["id", "text", "description", "updated", "created"]
+        fields = ["url", "id", "text", "description", "updated", "created"]
