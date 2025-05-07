@@ -31,12 +31,35 @@
                 <li class="nav-item">
                   <a class="nav-link text-bg-light ah-sidebar-title" href="">AntiHyip</a>
                 </li>
+
+                <li class="nav-item">
+                  <a class="nav-link text-bg-light ah-sidebar-bottom-link"
+                     href="{% url 'question-list' %}">All questions.</a>
+                </li>
               </ul>
             {% endblock sidebar %}
           </div>
 
           <div class="col-md-8">
             {% block content %}{% endblock %}
+
+            {% block pagination %}
+              {% if is_paginated %}
+                <div class="pagination ah-div">
+                  <span class="page-links">
+                    {% if page_obj.has_previous %}
+                      <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    <span class="page-current">
+                      <strong>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</strong>
+                    </span>
+                    {% if page_obj.has_next %}
+                      <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">Next</a>
+                    {% endif %}
+                  </span>
+                </div>
+              {% endif %}
+            {% endblock pagination %}
           </div>
 
         </div>
