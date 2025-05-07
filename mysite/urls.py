@@ -19,9 +19,12 @@ from django.urls import include, path
 
 urlpatterns = []
 
-# My app
+# My apps
 urlpatterns += [
+    # hyiptest
     path("", include("hyiptest.urls")),
+    # api
+    path("api/", include("api.urls", "api")),
 ]
 
 """

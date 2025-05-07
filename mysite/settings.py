@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django_extensions",
-    # My app
+    # My apps
     "hyiptest",
+    "api",
 ]
 
 MIDDLEWARE = [

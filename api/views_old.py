@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404
+
+from hyiptest.models import Question
 from rest_framework import generics, mixins, renderers, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from hyiptest.models import Question
-from hyiptest.serializers import QuestionSerializer
+from api.serializers import QuestionSerializer
 
 
 class QuestionList1(APIView):
