@@ -6,9 +6,12 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
-class Question(models.Model):
+class UUIDTimestampsModel(models.Model):
     """
-    Model representing a single question for the user.
+    Base abstract model that has one UUIDField and two auto `DateTimeField`s.
+
+    UUIDField `id` field is primary_key
+    and 2 `DateTimeField`s are for creation and modification time.
     """
 
     id = models.UUIDField(
@@ -19,6 +22,22 @@ class Question(models.Model):
         help_text=_("Unique identifier"),
     )
 
+    created = models.DateTimeField(auto_now_add=True, help_text=_("Creation time"))
+    updated = models.DateTimeField(auto_now=True, help_text=_("Modification time"))
+
+    class Meta:
+        abstract = True
+        ordering = ["created"]  # will suffice initially for most models
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Question(UUIDTimestampsModel):
+    """
+    Model representing a single question for the user.
+    """
+
     text = models.CharField(
         max_length=100, unique=True, help_text=_("The question itself")
     )
@@ -28,11 +47,7 @@ class Question(models.Model):
         help_text=_("Explain the question to the user"),
     )
 
-    updated = models.DateTimeField(auto_now=True, help_text=_("Modification time"))
-    created = models.DateTimeField(auto_now_add=True, help_text=_("Creation time"))
-
-    class Meta:
-        ordering = ["created"]  # This ordering will work for now.
+    class Meta(UUIDTimestampsModel.Meta):  # Django will set abstract=False.
         constraints = [
             models.UniqueConstraint(
                 Lower("text"),
