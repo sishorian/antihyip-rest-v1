@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Question {{ question.pk }}.</h1>
+  <h1>Question Details.</h1>
 
   <p>
     <strong>Text:</strong> {{ question.text }}
@@ -14,5 +14,17 @@
     {% else %}
       <strong>None</strong>
     {% endif %}
+  </p>
+
+  <p>
+    <strong>ID:</strong> {{ question.id }}
+  </p>
+
+  <p>
+    <strong>Created:</strong> {{ question.created }}
+  </p>
+
+  <p>
+    <strong>Updated:</strong> {{ question.updated }}
   </p>
 {% endblock %}
