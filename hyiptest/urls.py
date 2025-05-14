@@ -26,3 +26,13 @@ urlpatterns += [
         name="question-delete",
     ),
 ]
+
+# BadSite
+urlpatterns += [
+    path("badsites/", views.BadSiteListView.as_view(), name="badsite-list"),
+    path(
+        "badsites/<uuid:pk>/",
+        views.BadSiteDetailView.as_view(),
+        name="badsite-detail",
+    ),
+]

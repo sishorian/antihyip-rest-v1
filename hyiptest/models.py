@@ -81,8 +81,26 @@ class BadSite(UUIDTimestampsModel):
         help_text=_("What type of fraud it is, e.g. pyramid, scam, etc."),
     )
 
+    def display_domains(self):
+        """
+        Create a short string of the first domain plus number of remaining.
+        """
+        num_domains = self.domains.count()
+        first_domain = self.domains.first()
+        match num_domains:
+            case 0:
+                return "-"
+            case 1:
+                return f"{first_domain}"
+        return f"{first_domain}, ...+{num_domains - 1}"
+
+    display_domains.short_description = "Domains"
+
     def __str__(self):
         return str(self.name)
+
+    def get_absolute_url(self):
+        return reverse("badsite-detail", kwargs={"pk": self.pk})
 
     class Meta(UUIDTimestampsModel.Meta):
         constraints = [

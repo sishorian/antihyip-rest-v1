@@ -1,0 +1,30 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>List of bad sites.</h1>
+
+  {% if badsite_list %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Domains</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for badsite in badsite_list %}
+          <tr>
+            <td>
+              <a href="{{ badsite.get_absolute_url }}">{{ badsite.name }}</a>
+            </td>
+            <td>{{ badsite.bad_type }}</td>
+            <td>{{ badsite.display_domains }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No sites found in the database.</p>
+  {% endif %}
+{% endblock %}

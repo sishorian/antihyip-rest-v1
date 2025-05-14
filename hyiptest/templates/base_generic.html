@@ -29,12 +29,16 @@
             {% block sidebar %}
               <ul class="nav flex-column mb-auto mt-0">
                 <li class="nav-item">
-                  <a class="nav-link text-bg-light ah-sidebar-title" href="">AntiHyip</a>
+                  <a class="nav-link text-bg-light ah-sidebar-title">AntiHyip</a>
                 </li>
 
                 <li class="nav-item">
+                  <a class="nav-link text-bg-light ah-sidebar-mid-link"
+                     href="{% url 'question-list' %}">List of all questions.</a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link text-bg-light ah-sidebar-bottom-link"
-                     href="{% url 'question-list' %}">All questions.</a>
+                     href="{% url 'badsite-list' %}">Database of bad sites.</a>
                 </li>
               </ul>
             {% endblock sidebar %}

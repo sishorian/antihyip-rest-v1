@@ -2,7 +2,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from hyiptest.models import Question
+from hyiptest.models import BadSite, Question
+
+
+# Question
 
 
 class QuestionListView(generic.ListView):
@@ -36,3 +39,15 @@ class QuestionDeleteView(generic.DeleteView):
             return HttpResponseRedirect(
                 reverse("question-delete", kwargs={"pk": self.object.pk})
             )
+
+
+# BadSite
+
+
+class BadSiteListView(generic.ListView):
+    model = BadSite
+    paginate_by = 20
+
+
+class BadSiteDetailView(generic.DetailView):
+    model = BadSite
