@@ -4,6 +4,11 @@ from hyiptest import views
 
 urlpatterns = []
 
+# Home page
+urlpatterns += [
+    path("", views.HomePageView.as_view(), name="home"),
+]
+
 # Question
 urlpatterns += [
     path("questions/", views.QuestionListView.as_view(), name="question-list"),

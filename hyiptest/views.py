@@ -5,6 +5,10 @@ from django.views import generic
 from hyiptest.models import BadSite, Question
 
 
+class HomePageView(generic.TemplateView):
+    template_name = "home.html"
+
+
 # Question
 
 
