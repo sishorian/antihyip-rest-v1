@@ -41,3 +41,12 @@ urlpatterns += [
         name="badsite-detail",
     ),
 ]
+
+# Check website domain
+urlpatterns += [
+    path(
+        "domain-search/",
+        views.DomainSearchView.as_view(),
+        name="domain-search",
+    ),
+]

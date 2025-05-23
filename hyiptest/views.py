@@ -2,11 +2,18 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
+from hyiptest.forms import DomainSearchForm
 from hyiptest.models import BadSite, Question
 
 
 class HomePageView(generic.TemplateView):
     template_name = "home.html"
+
+
+class DomainSearchView(generic.FormView):
+    template_name = "hyiptest/domainsearch_form.html"
+    form_class = DomainSearchForm
+    success_url = reverse_lazy("home")  # for now
 
 
 # Question
