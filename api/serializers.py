@@ -7,7 +7,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
         model = Question
         fields = ["url", "id", "text", "description", "created", "updated"]
         # The app namespace is not included by default.
-        extra_kwargs = {"url": {"view_name": "api:question-detail"}}
+        extra_kwargs = {"url": dict(view_name="api:question-detail")}
 
 
 class BadSiteSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,7 +20,7 @@ class BadSiteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BadSite
         fields = ["url", "id", "name", "bad_type", "domains", "created", "updated"]
-        extra_kwargs = {"url": {"view_name": "api:badsite-detail"}}
+        extra_kwargs = {"url": dict(view_name="api:badsite-detail")}
 
 
 class BadDomainSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,6 +28,6 @@ class BadDomainSerializer(serializers.HyperlinkedModelSerializer):
         model = BadDomain
         fields = ["url", "id", "name", "site", "created", "updated"]
         extra_kwargs = {
-            "url": {"view_name": "api:baddomain-detail"},
-            "site": {"view_name": "api:badsite-detail"},
+            "url": dict(view_name="api:baddomain-detail"),
+            "site": dict(view_name="api:badsite-detail"),
         }
