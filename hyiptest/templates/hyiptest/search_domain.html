@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Search website in the fraud database.</h1>
+
+  <form>
+    {{ form.as_div }}
+    {% comment "Disable form classes for now" %}
+      <button type="submit" class="btn btn-primary">Search</button>
+    {% endcomment %}
+    <button type="submit">Search</button>
+  </form>
+
+  {% if search_executed %}
+    <hr />
+    <p>
+      <strong>Your search:</strong> {{ query }}
+    </p>
+
+    {% if found_badsite %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Domains</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <a href="{{ found_badsite.get_absolute_url }}">{{ found_badsite.name }}</a>
+            </td>
+            <td>{{ found_badsite.bad_type }}</td>
+            <td>{{ found_badsite.display_domains }}</td>
+          </tr>
+        </tbody>
+      </table>
+    {% else %}
+      <p>No websites with this domain found in the fraud database.</p>
+    {% endif %}
+  {% endif %}
+{% endblock %}

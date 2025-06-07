@@ -1,19 +1,47 @@
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from hyiptest.forms import DomainSearchForm
-from hyiptest.models import BadSite, Question
+from hyiptest.forms import SearchDomainForm
+from hyiptest.models import BadDomain, BadSite, Question
 
 
 class HomePageView(generic.TemplateView):
     template_name = "home.html"
 
 
-class DomainSearchView(generic.FormView):
-    template_name = "hyiptest/domainsearch_form.html"
-    form_class = DomainSearchForm
-    success_url = reverse_lazy("home")  # for now
+def search_domain(request):
+    """
+    View function for searching domain in the fraud database.
+    """
+    query = None
+    search_executed = False
+    found_badsite = None
+
+    if "q" in request.GET:
+        # Validate submitted form
+        form = SearchDomainForm(request.GET)
+        query = request.GET["q"]
+        if form.is_valid():
+            # Or if result is a separate page:
+            # return redirect("search-domain-result", query=query)
+            search_executed = True
+            try:
+                found_badsite = BadDomain.objects.get(name=query).site
+            except BadDomain.DoesNotExist:
+                pass
+    else:
+        # New form
+        form = SearchDomainForm()
+
+    context = {
+        "form": form,
+        "query": query,
+        "search_executed": search_executed,
+        "found_badsite": found_badsite,
+    }
+    return render(request, "hyiptest/search_domain.html", context)
 
 
 # Question
