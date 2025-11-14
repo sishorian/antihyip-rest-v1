@@ -65,6 +65,35 @@ class Question(UUIDTimestampsModel):
         ]
 
 
+class Answer(UUIDTimestampsModel):
+    """
+    Model representing an answer to a specific question.
+    """
+
+    text = models.CharField(
+        max_length=100, unique=True, help_text=_("The answer itself")
+    )
+    description = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=_("What it means, in more words"),
+    )
+
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="answers",
+        help_text=_("The question it belongs to"),
+    )
+    risk_score = models.PositiveSmallIntegerField(
+        default=100,
+        help_text=_("Bad points for a site"),
+    )
+
+    def __str__(self):
+        return str(self.text)
+
+
 class BadSite(UUIDTimestampsModel):
     """
     Model representing a website known to be a fraud.
