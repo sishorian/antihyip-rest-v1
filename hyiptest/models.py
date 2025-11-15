@@ -94,6 +94,22 @@ class Answer(UUIDTimestampsModel):
         return str(self.text)
 
 
+class TestProgress(UUIDTimestampsModel):
+    """
+    Model representing user's progress completing the test.
+    """
+
+    current_question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        help_text=_("Question the user is currently stuck at"),
+    )
+    risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
+        default=0,
+        help_text=_("Accumulated score so far"),
+    )
+
+
 class BadSite(UUIDTimestampsModel):
     """
     Model representing a website known to be a fraud.
