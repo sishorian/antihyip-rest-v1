@@ -19,19 +19,13 @@ from django.urls import include, path
 
 urlpatterns = []
 
+from django.contrib import admin
+
 # My apps
 urlpatterns += [
     # hyiptest
     path("", include("hyiptest.urls")),
+    path("admin/", admin.site.urls),
     # api
     path("api/", include("api.urls", "api")),
 ]
-
-"""
-# Think about admin site later.
-from django.contrib import admin
-
-urlpatterns += [
-    path("admin/", admin.site.urls),
-]
-"""
