@@ -119,8 +119,11 @@ class BadSite(UUIDTimestampsModel):
         help_text=_("Name of the site or its company behind it"),
     )
 
+    # Can be the exactly same, but shouldn't be "similarly same": "Fraud" and "fraud".
+    # Difficult to enforce.
     bad_type = models.CharField(
         max_length=50,
+        unique=False,
         help_text=_("What type of fraud it is, e.g. pyramid, scam, etc."),
     )
 
