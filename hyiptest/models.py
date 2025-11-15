@@ -70,9 +70,7 @@ class Answer(UUIDTimestampsModel):
     Model representing an answer to a specific question.
     """
 
-    text = models.CharField(
-        max_length=100, unique=True, help_text=_("The answer itself")
-    )
+    text = models.CharField(max_length=100, help_text=_("The answer itself"))
     description = models.CharField(
         max_length=200,
         blank=True,
