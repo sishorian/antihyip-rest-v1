@@ -11,8 +11,8 @@ class AnswerInline(admin.StackedInline):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("text", "created")
-    list_filter = ("created",)
+    list_display = ("text", "created_at")
+    list_filter = ("created_at",)
     inlines = [AnswerInline]
 
 
@@ -23,8 +23,8 @@ class BadDomainInline(admin.StackedInline):
 
 @admin.register(BadSite)
 class BadSiteAdmin(admin.ModelAdmin):
-    list_display = ("name", "bad_type", "display_domains", "id", "updated")
-    list_filter = ("updated", "bad_type", "name", "created")
+    list_display = ("name", "bad_type", "display_domains", "id", "updated_at")
+    list_filter = ("updated_at", "bad_type", "name", "created_at")
     fields = ["name", "bad_type"]
     inlines = [BadDomainInline]
 

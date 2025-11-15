@@ -24,15 +24,15 @@ class UUIDTimestampsModel(models.Model):
         help_text=_("Unique identifier"),
     )
 
-    created = models.DateTimeField(auto_now_add=True, help_text=_("Creation time"))
-    updated = models.DateTimeField(auto_now=True, help_text=_("Modification time"))
+    created_at = models.DateTimeField(auto_now_add=True, help_text=_("Creation time"))
+    updated_at = models.DateTimeField(auto_now=True, help_text=_("Modification time"))
 
     def __str__(self):
         return str(self.id)
 
     class Meta:
         abstract = True
-        ordering = ["created"]  # will suffice initially for most models
+        ordering = ["created_at"]  # will suffice initially for most models
 
 
 class Question(UUIDTimestampsModel):

@@ -5,7 +5,7 @@ from rest_framework import serializers
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Question
-        fields = ["url", "id", "text", "description", "created", "updated"]
+        fields = ["url", "id", "text", "description", "created_at", "updated_at"]
         # The app namespace is not included by default.
         extra_kwargs = {"url": dict(view_name="api:question-detail")}
 
@@ -19,14 +19,22 @@ class BadSiteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BadSite
-        fields = ["url", "id", "name", "bad_type", "domains", "created", "updated"]
+        fields = [
+            "url",
+            "id",
+            "name",
+            "bad_type",
+            "domains",
+            "created_at",
+            "updated_at",
+        ]
         extra_kwargs = {"url": dict(view_name="api:badsite-detail")}
 
 
 class BadDomainSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BadDomain
-        fields = ["url", "id", "name", "site", "created", "updated"]
+        fields = ["url", "id", "name", "site", "created_at", "updated_at"]
         extra_kwargs = {
             "url": dict(view_name="api:baddomain-detail"),
             "site": dict(view_name="api:badsite-detail"),
