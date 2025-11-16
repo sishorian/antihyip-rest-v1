@@ -1,6 +1,6 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from django.urls import reverse, reverse_lazy
+from django.core.exceptions import BadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views import generic
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
@@ -27,32 +27,27 @@ def search_domain(request):
     """
     View function for searching domain in the fraud database.
     """
-    query = None
-    search_executed = False
-    found_badsite = None
-
-    if "q" in request.GET:
-        # Validate submitted form
-        form = SearchDomainForm(request.GET)
-        query = request.GET["q"]
-        if form.is_valid():
-            # Or if result is a separate page:
-            # return redirect("search-domain-result", query=query)
-            search_executed = True
-            try:
-                found_badsite = BadDomain.objects.get(name=query).site
-            except BadDomain.DoesNotExist:
-                pass
-    else:
-        # New form
-        form = SearchDomainForm()
-
     context = {
-        "form": form,
-        "query": query,
-        "search_executed": search_executed,
-        "found_badsite": found_badsite,
+        "form": None,  # must be assigned later
+        "query": None,
+        "search_executed": False,
+        "found_badsite": None,
     }
+
+    if "q" in request.GET:  # submitted form
+        context["form"] = SearchDomainForm(request.GET)
+        context["query"] = request.GET["q"]
+        if context["form"].is_valid():
+            context["search_executed"] = True
+            try:
+                context["found_badsite"] = BadDomain.objects.get(
+                    name=context["query"]
+                ).site
+            except BadDomain.DoesNotExist:
+                context["found_badsite"] = None  # equivalent to just `pass`
+    else:  # new form
+        context["form"] = SearchDomainForm()
+
     return render(request, "hyiptest/search_domain.html", context)
 
 
@@ -81,15 +76,6 @@ class QuestionUpdateView(generic.UpdateView):
 class QuestionDeleteView(generic.DeleteView):
     model = Question
     success_url = reverse_lazy("question-list")
-
-    def form_valid(self, form):
-        try:
-            self.object.delete()
-            return HttpResponseRedirect(self.success_url)
-        except Exception:
-            return HttpResponseRedirect(
-                reverse("question-delete", kwargs={"pk": self.object.pk})
-            )
 
 
 # HtestSnapshot
@@ -122,9 +108,9 @@ def htest_question(request, progress_id=None):
             question_in_progress=current_question
         )
     else:
-        saved_progress = HtestSnapshot.objects.get(  # TODO: implement handling wrong id
-            id=progress_id
-        )
+        saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
+        if saved_progress.question_in_progress is None:
+            raise BadRequest("Attempt to resume a test that is already finised")
         current_question = Question.objects.get(
             id=saved_progress.question_in_progress.id
         )
