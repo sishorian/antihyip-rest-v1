@@ -92,7 +92,9 @@ class Answer(UUIDTimestampsModel):
         return str(self.text)
 
 
-class TestProgress(UUIDTimestampsModel):
+# htest - short for hyiptest
+# Just `test` can be confused with unittest.
+class HtestProgress(UUIDTimestampsModel):
     """
     Model representing user's progress completing the test.
     """

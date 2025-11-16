@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
-from hyiptest.models import BadDomain, BadSite, Question, TestProgress
+from hyiptest.models import BadDomain, BadSite, HtestProgress, Question
 
 
 class HomePageView(generic.TemplateView):
@@ -45,7 +45,7 @@ def search_domain(request):
 
 
 # htest - short for hyiptest
-# `test_` can be confused with unittest.
+# Just `test` can be confused with unittest.
 def htest_question(request, progress_id=None):
     """
     View function for asking user one question from the test.
@@ -55,10 +55,10 @@ def htest_question(request, progress_id=None):
         current_question = (
             Question.objects.order_by().first()  # start with the first created question
         )
-        TestProgress.objects.all().delete()  # delete all previous saves
-        progress = TestProgress.objects.create(current_question=current_question)
+        HtestProgress.objects.all().delete()  # delete all previous saves
+        progress = HtestProgress.objects.create(current_question=current_question)
     else:
-        progress = TestProgress.objects.get(id=progress_id)  # skip handling wrong id
+        progress = HtestProgress.objects.get(id=progress_id)  # skip handling wrong id
         current_question = Question.objects.get(id=progress.current_question.id)
 
     if request.method == "POST":
