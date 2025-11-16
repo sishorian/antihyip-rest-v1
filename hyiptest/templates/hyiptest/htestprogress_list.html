@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Unfinished tests</h1>
+
+  <p>Click on an entry id to continue the test</p>
+
+  {% if htestprogress_list %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Test initiated</th>
+          <th>Last active</th>
+          <th>Details link</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for htestprogress in htestprogress_list %}
+          <tr>
+            <td>
+              <a href="{% url 'htest-question' htestprogress.id %}">{{ htestprogress.id }}</a>
+            </td>
+            <td>{{ htestprogress.created_at }}</td>
+            <td>{{ htestprogress.updated_at }}</td>
+            <td>
+              <a href="{{ htestprogress.get_absolute_url }}">#</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No unfinished tests found</p>
+  {% endif %}
+{% endblock %}

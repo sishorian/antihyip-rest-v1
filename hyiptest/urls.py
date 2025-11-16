@@ -62,3 +62,17 @@ urlpatterns += [
     path("test/", views.htest_question, name="htest-question"),
     path("test/<uuid:progress_id>/", views.htest_question, name="htest-question"),
 ]
+
+# HtestProgress
+urlpatterns += [
+    path(
+        "test/unfinished/",
+        views.HtestProgressListView.as_view(),
+        name="htestprogress-list",
+    ),
+    path(
+        "test/unfinished/<uuid:pk>/",
+        views.HtestProgressDetailView.as_view(),
+        name="htestprogress-detail",
+    ),
+]

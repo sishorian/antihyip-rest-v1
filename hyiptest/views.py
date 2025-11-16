@@ -139,3 +139,15 @@ class BadSiteListView(generic.ListView):
 
 class BadSiteDetailView(generic.DetailView):
     model = BadSite
+
+
+# HtestProgress
+
+
+class HtestProgressListView(generic.ListView):
+    model = HtestProgress
+    paginate_by = 20
+
+
+class HtestProgressDetailView(generic.DetailView):
+    model = HtestProgress

@@ -109,6 +109,9 @@ class HtestProgress(UUIDTimestampsModel):
         help_text=_("Accumulated score so far"),
     )
 
+    def get_absolute_url(self):
+        return reverse("htestprogress-detail", kwargs={"pk": self.pk})
+
 
 class BadSite(UUIDTimestampsModel):
     """

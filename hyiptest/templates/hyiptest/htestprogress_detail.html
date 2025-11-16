@@ -1,0 +1,29 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Test Progress Details</h1>
+
+  <p>
+    <strong>Current question</strong>
+    <br>
+    <a>{{ htestprogress.current_question.id }}
+      <br>
+    {{ htestprogress.current_question.text }}</a>
+  </p>
+
+  <p>
+    <strong>Current Risk Score:</strong> {{ htestprogress.current_risk_score }}
+  </p>
+
+  <p>
+    <strong>ID:</strong> {{ htestprogress.id }}
+  </p>
+
+  <p>
+    <strong>Created at:</strong> {{ htestprogress.created_at }}
+  </p>
+
+  <p>
+    <strong>Updated at:</strong> {{ htestprogress.updated_at }}
+  </p>
+{% endblock %}
