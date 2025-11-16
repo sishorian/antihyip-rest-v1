@@ -74,10 +74,12 @@ def htest_question(request, progress_id=None):
                 .order_by("created_at")
                 .first()
             )
+            if next_question is None:  # this was the last question
+                progress.delete()
+                return redirect("home")  # redirect to home page, for now
+            # Redirect to the test again, with updated progress
             progress.current_question = next_question
             progress.save()
-            # Redirect to the test again, with updated progress
-            # TODO: Add code for the last question
             return redirect("htest-question", progress_id=progress.id)
     else:
         form = SelectAnswerForm(question_obj=current_question)
