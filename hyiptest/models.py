@@ -183,7 +183,7 @@ class Answer(UUIDTimestampsModel):
 
 # htest - short for hyiptest
 # Just `test` can be confused with unittest.
-class HtestProgress(UUIDTimestampsModel):
+class HtestSnapshot(UUIDTimestampsModel):
     """
     Model representing user's progress completing the test.
     """
@@ -199,4 +199,4 @@ class HtestProgress(UUIDTimestampsModel):
     )
 
     def get_absolute_url(self):
-        return reverse("htestprogress-detail", kwargs={"pk": self.pk})
+        return reverse("htestsnapshot-detail", kwargs={"pk": self.pk})

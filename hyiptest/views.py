@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import generic
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
-from hyiptest.models import BadDomain, BadSite, HtestProgress, Question
+from hyiptest.models import BadDomain, BadSite, HtestSnapshot, Question
 
 
 class HomePageView(generic.TemplateView):
@@ -92,16 +92,16 @@ class QuestionDeleteView(generic.DeleteView):
             )
 
 
-# HtestProgress
+# HtestSnapshot
 
 
-class HtestProgressListView(generic.ListView):
-    model = HtestProgress
+class HtestSnapshotListView(generic.ListView):
+    model = HtestSnapshot
     paginate_by = 20
 
 
-class HtestProgressDetailView(generic.DetailView):
-    model = HtestProgress
+class HtestSnapshotDetailView(generic.DetailView):
+    model = HtestSnapshot
 
 
 # htest - short for hyiptest
@@ -115,16 +115,18 @@ def htest_question(request, progress_id=None):
         current_question = (
             Question.objects.order_by().first()  # start with the first created question
         )
-        HtestProgress.objects.all().delete()  # delete all previous saves
-        progress = HtestProgress.objects.create(current_question=current_question)
+        HtestSnapshot.objects.all().delete()  # delete all previous saves
+        saved_progress = HtestSnapshot.objects.create(current_question=current_question)
     else:
-        progress = HtestProgress.objects.get(id=progress_id)  # skip handling wrong id
-        current_question = Question.objects.get(id=progress.current_question.id)
+        saved_progress = HtestSnapshot.objects.get(  # skip handling wrong id, for now
+            id=progress_id
+        )
+        current_question = Question.objects.get(id=saved_progress.current_question.id)
 
     if request.method == "POST":
         form = SelectAnswerForm(request.POST, question_obj=current_question)
         if form.is_valid():
-            progress.current_risk_score += form.cleaned_data[
+            saved_progress.current_risk_score += form.cleaned_data[
                 "selected_answer"
             ].risk_score
 
@@ -135,12 +137,12 @@ def htest_question(request, progress_id=None):
                 .first()
             )
             if next_question is None:  # this was the last question
-                progress.delete()
+                saved_progress.delete()
                 return redirect("home")  # redirect to home page, for now
             # Redirect to the test again, with updated progress
-            progress.current_question = next_question
-            progress.save()
-            return redirect("htest-question", progress_id=progress.id)
+            saved_progress.current_question = next_question
+            saved_progress.save()
+            return redirect("htest-question", progress_id=saved_progress.id)
     else:
         form = SelectAnswerForm(question_obj=current_question)
 

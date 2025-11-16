@@ -57,17 +57,17 @@ urlpatterns += [
     ),
 ]
 
-# HtestProgress
+# HtestSnapshot
 urlpatterns += [
     path(
         "test/unfinished/",
-        views.HtestProgressListView.as_view(),
-        name="htestprogress-list",
+        views.HtestSnapshotListView.as_view(),
+        name="htestsnapshot-list",
     ),
     path(
         "test/unfinished/<uuid:pk>/",
-        views.HtestProgressDetailView.as_view(),
-        name="htestprogress-detail",
+        views.HtestSnapshotDetailView.as_view(),
+        name="htestsnapshot-detail",
     ),
 ]
 

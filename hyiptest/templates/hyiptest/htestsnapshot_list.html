@@ -5,7 +5,7 @@
 
   <p>Click on an entry id to continue the test</p>
 
-  {% if htestprogress_list %}
+  {% if htestsnapshot_list %}
     <table class="table">
       <thead>
         <tr>
@@ -16,15 +16,15 @@
         </tr>
       </thead>
       <tbody>
-        {% for htestprogress in htestprogress_list %}
+        {% for htestsnapshot in htestsnapshot_list %}
           <tr>
             <td>
-              <a href="{% url 'htest-question' htestprogress.id %}">{{ htestprogress.id }}</a>
+              <a href="{% url 'htest-question' htestsnapshot.id %}">{{ htestsnapshot.id }}</a>
             </td>
-            <td>{{ htestprogress.created_at }}</td>
-            <td>{{ htestprogress.updated_at }}</td>
+            <td>{{ htestsnapshot.created_at }}</td>
+            <td>{{ htestsnapshot.updated_at }}</td>
             <td>
-              <a href="{{ htestprogress.get_absolute_url }}">#</a>
+              <a href="{{ htestsnapshot.get_absolute_url }}">#</a>
             </td>
           </tr>
         {% endfor %}

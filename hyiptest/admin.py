@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from hyiptest.models import Answer, BadDomain, BadSite, HtestProgress, Question
+from hyiptest.models import Answer, BadDomain, BadSite, HtestSnapshot, Question
 
 
 class BadDomainInline(admin.StackedInline):
@@ -28,4 +28,4 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
 
 
-admin.site.register(HtestProgress)
+admin.site.register(HtestSnapshot)
