@@ -185,12 +185,14 @@ class Answer(UUIDTimestampsModel):
 # Just `test` can be confused with unittest.
 class HtestSnapshot(UUIDTimestampsModel):
     """
-    Model representing user's progress completing the test.
+    Model representing the status of a test.
     """
 
     question_in_progress = models.ForeignKey(
         Question,
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         help_text=_("Question the user is currently stuck at"),
     )
     total_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions

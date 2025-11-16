@@ -1,36 +1,38 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Unfinished tests</h1>
-
-  <p>Click on an entry id to continue the test</p>
+  <h1>Previously taken tests</h1>
 
   {% if htestsnapshot_list %}
     <table class="table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Test initiated</th>
-          <th>Last active</th>
-          <th>Details link</th>
+          <th>Status</th>
+          <th>Started</th>
+          <th>Last Active</th>
         </tr>
       </thead>
       <tbody>
         {% for htestsnapshot in htestsnapshot_list %}
           <tr>
             <td>
-              <a href="{% url 'htest-question' htestsnapshot.id %}">{{ htestsnapshot.id }}</a>
+              <a href="{{ htestsnapshot.get_absolute_url }}">{{ htestsnapshot.id }}</a>
+            </td>
+            <td>
+              {% if htestsnapshot.question_in_progress %}
+                Abandoned (<a href="{% url 'htest-question' htestsnapshot.id %}">Resume</a>)
+              {% else %}
+                Completed ({{ htestsnapshot.total_risk_score }})
+              {% endif %}
             </td>
             <td>{{ htestsnapshot.created_at }}</td>
             <td>{{ htestsnapshot.updated_at }}</td>
-            <td>
-              <a href="{{ htestsnapshot.get_absolute_url }}">#</a>
-            </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No unfinished tests found</p>
+    <p>None found</p>
   {% endif %}
 {% endblock %}

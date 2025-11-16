@@ -4,15 +4,27 @@
   <h1>Test Progress Details</h1>
 
   <p>
-    <strong>Current question</strong>
-    <br>
-    <a>{{ htestsnapshot.question_in_progress.id }}
-      <br>
-    {{ htestsnapshot.question_in_progress.text }}</a>
+    <strong>Status:</strong>
+    {% if htestsnapshot.question_in_progress %}
+      Abandoned
+      (<a href="{% url 'htest-question' htestsnapshot.id %}">Resume test</a>)
+    {% else %}
+      Completed
+    {% endif %}
   </p>
 
   <p>
-    <strong>Current Risk Score:</strong> {{ htestsnapshot.total_risk_score }}
+    <strong>Question in progress:</strong>
+    {% if htestsnapshot.question_in_progress %}
+      "{{ htestsnapshot.question_in_progress.text }}"
+      (<a href="{{ htestsnapshot.question_in_progress.get_absolute_url }}">{{ htestsnapshot.question_in_progress.id }}</a>)
+    {% else %}
+      <strong>None</strong>
+    {% endif %}
+  </p>
+
+  <p>
+    <strong>Total Risk Score:</strong> {{ htestsnapshot.total_risk_score }}
   </p>
 
   <p>

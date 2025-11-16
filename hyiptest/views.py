@@ -115,12 +115,14 @@ def htest_question(request, progress_id=None):
         current_question = (
             Question.objects.order_by().first()  # start with the first created question
         )
-        HtestSnapshot.objects.all().delete()  # delete all previous saves
+        HtestSnapshot.objects.filter(
+            question_in_progress__isnull=False
+        ).delete()  # delete all previous incomplete tests, for now
         saved_progress = HtestSnapshot.objects.create(
             question_in_progress=current_question
         )
     else:
-        saved_progress = HtestSnapshot.objects.get(  # skip handling wrong id, for now
+        saved_progress = HtestSnapshot.objects.get(  # TODO: implement handling wrong id
             id=progress_id
         )
         current_question = Question.objects.get(
@@ -140,13 +142,13 @@ def htest_question(request, progress_id=None):
                 .order_by("created_at")
                 .first()
             )
-            if next_question is None:  # this was the last question
-                saved_progress.delete()
-                return redirect("home")  # redirect to home page, for now
-            # Redirect to the test again, with updated progress
             saved_progress.question_in_progress = next_question
             saved_progress.save()
-            return redirect("htest-question", progress_id=saved_progress.id)
+            if next_question is None:  # this was the last question
+                return redirect("home")  # redirect to home page, for now
+            return redirect(
+                "htest-question", progress_id=saved_progress.id  # next question
+            )
     else:
         form = SelectAnswerForm(question_obj=current_question)
 
