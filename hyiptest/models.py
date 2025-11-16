@@ -104,7 +104,7 @@ class HtestProgress(UUIDTimestampsModel):
         on_delete=models.CASCADE,
         help_text=_("Question the user is currently stuck at"),
     )
-    risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
+    current_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
         default=0,
         help_text=_("Accumulated score so far"),
     )

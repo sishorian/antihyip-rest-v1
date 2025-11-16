@@ -64,7 +64,9 @@ def htest_question(request, progress_id=None):
     if request.method == "POST":
         form = SelectAnswerForm(request.POST, question_obj=current_question)
         if form.is_valid():
-            progress.risk_score += form.cleaned_data["selected_answer"].risk_score
+            progress.current_risk_score += form.cleaned_data[
+                "selected_answer"
+            ].risk_score
 
             # Find the questions after the current one, order them, get next
             next_question = (
