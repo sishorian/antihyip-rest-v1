@@ -35,84 +35,6 @@ class UUIDTimestampsModel(models.Model):
         ordering = ["created_at"]  # will suffice initially for most models
 
 
-class Question(UUIDTimestampsModel):
-    """
-    Model representing a single question for the user.
-    """
-
-    text = models.CharField(
-        max_length=100, unique=True, help_text=_("The question itself")
-    )
-    description = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text=_("Explain the question to the user"),
-    )
-
-    def __str__(self):
-        return str(self.text)
-
-    def get_absolute_url(self):
-        return reverse("question-detail", kwargs={"pk": self.pk})
-
-    class Meta(UUIDTimestampsModel.Meta):  # Django will set abstract=False.
-        constraints = [
-            models.UniqueConstraint(
-                Lower("text"),
-                name="question_text_lower_unique",
-                violation_error_message=_("Question already exists (lowercase match)"),
-            ),
-        ]
-
-
-class Answer(UUIDTimestampsModel):
-    """
-    Model representing an answer to a specific question.
-    """
-
-    text = models.CharField(max_length=100, help_text=_("The answer itself"))
-    description = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text=_("What it means, in more words"),
-    )
-
-    question = models.ForeignKey(
-        Question,
-        on_delete=models.CASCADE,
-        related_name="answers",
-        help_text=_("The question it belongs to"),
-    )
-    risk_score = models.PositiveSmallIntegerField(
-        default=100,
-        help_text=_("Bad points for a site"),
-    )
-
-    def __str__(self):
-        return str(self.text)
-
-
-# htest - short for hyiptest
-# Just `test` can be confused with unittest.
-class HtestProgress(UUIDTimestampsModel):
-    """
-    Model representing user's progress completing the test.
-    """
-
-    current_question = models.ForeignKey(
-        Question,
-        on_delete=models.CASCADE,
-        help_text=_("Question the user is currently stuck at"),
-    )
-    current_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
-        default=0,
-        help_text=_("Accumulated score so far"),
-    )
-
-    def get_absolute_url(self):
-        return reverse("htestprogress-detail", kwargs={"pk": self.pk})
-
-
 class BadSite(UUIDTimestampsModel):
     """
     Model representing a website known to be a fraud.
@@ -200,3 +122,81 @@ class BadDomain(UUIDTimestampsModel):
                 name="baddomain_name_is_lower",
             ),
         ]
+
+
+class Question(UUIDTimestampsModel):
+    """
+    Model representing a single question for the user.
+    """
+
+    text = models.CharField(
+        max_length=100, unique=True, help_text=_("The question itself")
+    )
+    description = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=_("Explain the question to the user"),
+    )
+
+    def __str__(self):
+        return str(self.text)
+
+    def get_absolute_url(self):
+        return reverse("question-detail", kwargs={"pk": self.pk})
+
+    class Meta(UUIDTimestampsModel.Meta):  # Django will set abstract=False.
+        constraints = [
+            models.UniqueConstraint(
+                Lower("text"),
+                name="question_text_lower_unique",
+                violation_error_message=_("Question already exists (lowercase match)"),
+            ),
+        ]
+
+
+class Answer(UUIDTimestampsModel):
+    """
+    Model representing an answer to a specific question.
+    """
+
+    text = models.CharField(max_length=100, help_text=_("The answer itself"))
+    description = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=_("What it means, in more words"),
+    )
+
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="answers",
+        help_text=_("The question it belongs to"),
+    )
+    risk_score = models.PositiveSmallIntegerField(
+        default=100,
+        help_text=_("Bad points for a site"),
+    )
+
+    def __str__(self):
+        return str(self.text)
+
+
+# htest - short for hyiptest
+# Just `test` can be confused with unittest.
+class HtestProgress(UUIDTimestampsModel):
+    """
+    Model representing user's progress completing the test.
+    """
+
+    current_question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        help_text=_("Question the user is currently stuck at"),
+    )
+    current_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
+        default=0,
+        help_text=_("Accumulated score so far"),
+    )
+
+    def get_absolute_url(self):
+        return reverse("htestprogress-detail", kwargs={"pk": self.pk})

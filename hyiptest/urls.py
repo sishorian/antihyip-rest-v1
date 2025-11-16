@@ -9,6 +9,25 @@ urlpatterns += [
     path("", views.HomePageView.as_view(), name="home"),
 ]
 
+# BadSite
+urlpatterns += [
+    path(
+        "badsites/",
+        views.BadSiteListView.as_view(),
+        name="badsite-list",
+    ),
+    path(
+        "badsites/<uuid:pk>/",
+        views.BadSiteDetailView.as_view(),
+        name="badsite-detail",
+    ),
+]
+
+# Check website domain
+urlpatterns += [
+    path("search-domain/", views.search_domain, name="search-domain"),
+]
+
 # Question
 urlpatterns += [
     path(
@@ -38,31 +57,6 @@ urlpatterns += [
     ),
 ]
 
-# BadSite
-urlpatterns += [
-    path(
-        "badsites/",
-        views.BadSiteListView.as_view(),
-        name="badsite-list",
-    ),
-    path(
-        "badsites/<uuid:pk>/",
-        views.BadSiteDetailView.as_view(),
-        name="badsite-detail",
-    ),
-]
-
-# Check website domain
-urlpatterns += [
-    path("search-domain/", views.search_domain, name="search-domain"),
-]
-
-# The test
-urlpatterns += [
-    path("test/", views.htest_question, name="htest-question"),
-    path("test/<uuid:progress_id>/", views.htest_question, name="htest-question"),
-]
-
 # HtestProgress
 urlpatterns += [
     path(
@@ -75,4 +69,10 @@ urlpatterns += [
         views.HtestProgressDetailView.as_view(),
         name="htestprogress-detail",
     ),
+]
+
+# The test
+urlpatterns += [
+    path("test/", views.htest_question, name="htest-question"),
+    path("test/<uuid:progress_id>/", views.htest_question, name="htest-question"),
 ]
