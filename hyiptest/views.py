@@ -116,17 +116,21 @@ def htest_question(request, progress_id=None):
             Question.objects.order_by().first()  # start with the first created question
         )
         HtestSnapshot.objects.all().delete()  # delete all previous saves
-        saved_progress = HtestSnapshot.objects.create(current_question=current_question)
+        saved_progress = HtestSnapshot.objects.create(
+            question_in_progress=current_question
+        )
     else:
         saved_progress = HtestSnapshot.objects.get(  # skip handling wrong id, for now
             id=progress_id
         )
-        current_question = Question.objects.get(id=saved_progress.current_question.id)
+        current_question = Question.objects.get(
+            id=saved_progress.question_in_progress.id
+        )
 
     if request.method == "POST":
         form = SelectAnswerForm(request.POST, question_obj=current_question)
         if form.is_valid():
-            saved_progress.current_risk_score += form.cleaned_data[
+            saved_progress.total_risk_score += form.cleaned_data[
                 "selected_answer"
             ].risk_score
 
@@ -140,7 +144,7 @@ def htest_question(request, progress_id=None):
                 saved_progress.delete()
                 return redirect("home")  # redirect to home page, for now
             # Redirect to the test again, with updated progress
-            saved_progress.current_question = next_question
+            saved_progress.question_in_progress = next_question
             saved_progress.save()
             return redirect("htest-question", progress_id=saved_progress.id)
     else:
