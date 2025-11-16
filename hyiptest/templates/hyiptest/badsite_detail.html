@@ -24,7 +24,7 @@
     <hr />
 
     {% for domain in badsite.domains.all %}
-      <p>{{ domain.name }}</p>
+      <p>{{ domain.name }} ({{ domain.updated_at }})</p>
     {% empty %}
       <p>
         <strong>None</strong>
