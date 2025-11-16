@@ -27,4 +27,36 @@
   <p>
     <strong>Updated at:</strong> {{ question.updated_at }}
   </p>
+
+  <div class="ms-4 mt-4">
+    <h4>Answers</h4>
+    <hr />
+
+    {% if question.answers.all %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Text</th>
+            <th>Risk Score</th>
+            <th>Description</th>
+            <th>Last updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for answer in question.answers.all %}
+            <tr>
+              <td>{{ answer.text }}</td>
+              <td>{{ answer.risk_score }}</td>
+              <td>{{ answer.description }}</td>
+              <td>{{ answer.updated_at }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>
+        <strong>None</strong>
+      </p>
+    {% endif %}
+  </div>
 {% endblock %}
