@@ -3,36 +3,64 @@
 {% block content %}
   <h1>Previously taken tests</h1>
 
-  {% if htestsnapshot_list %}
-    <table class="table">
-      <thead>
+  <p>
+    Click on an <em>ID</em> to view the details.
+    <br>
+    Click on a <em>Total Risk Score</em> to resume the test or view its result.
+  </p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Total Risk Score</th>
+        <th>Started</th>
+        <th>Completed / Last Active</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for htestsnapshot in htestsnapshot_list %}
         <tr>
-          <th>ID</th>
-          <th>Status</th>
-          <th>Started</th>
-          <th>Last Active</th>
+          <td>
+            <a href="{{ htestsnapshot.get_absolute_url }}">{{ htestsnapshot.id }}</a>
+          </td>
+          <td>
+            {% if htestsnapshot.question_in_progress %}
+              Abandoned
+            {% else %}
+              Completed
+            {% endif %}
+          </td>
+          <td>
+            {% if htestsnapshot.question_in_progress %}
+              <a href="{% url 'htest-question' htestsnapshot.id %}">-</a>
+            {% else %}
+              <a href="{% url 'htest-result' htestsnapshot.id %}">{{ htestsnapshot.total_risk_score }}</a>
+            {% endif %}
+          </td>
+          <td>{{ htestsnapshot.created_at }}</td>
+          <td>{{ htestsnapshot.updated_at }}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for htestsnapshot in htestsnapshot_list %}
-          <tr>
-            <td>
-              <a href="{{ htestsnapshot.get_absolute_url }}">{{ htestsnapshot.id }}</a>
-            </td>
-            <td>
-              {% if htestsnapshot.question_in_progress %}
-                Abandoned (<a href="{% url 'htest-question' htestsnapshot.id %}">Resume</a>)
-              {% else %}
-                Completed ({{ htestsnapshot.total_risk_score }})
-              {% endif %}
-            </td>
-            <td>{{ htestsnapshot.created_at }}</td>
-            <td>{{ htestsnapshot.updated_at }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>None found</p>
-  {% endif %}
+      {% empty %}
+        <tr>
+          <td>
+            <strong>None found</strong>
+          </td>
+          <td>
+            <strong>-</strong>
+          </td>
+          <td>
+            <strong>-</strong>
+          </td>
+          <td>
+            <strong>-</strong>
+          </td>
+          <td>
+            <strong>-</strong>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
