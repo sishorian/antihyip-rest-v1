@@ -73,6 +73,19 @@ urlpatterns += [
 
 # The test
 urlpatterns += [
-    path("test/", views.htest_question, name="htest-question"),
-    path("test/<uuid:progress_id>/", views.htest_question, name="htest-question"),
+    path(
+        "test/",
+        views.htest_question,
+        name="htest-question",
+    ),
+    path(
+        "test/<uuid:progress_id>/",
+        views.htest_question,
+        name="htest-question",
+    ),
+    path(
+        "test/<uuid:progress_id>/result/",
+        views.HtestResultView.as_view(),
+        name="htest-result",
+    ),
 ]

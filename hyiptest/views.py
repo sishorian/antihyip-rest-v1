@@ -130,11 +130,11 @@ def htest_question(request, progress_id=None):
             )
             saved_progress.question_in_progress = next_question
             saved_progress.save()
-            if next_question is None:  # this was the last question
-                return redirect("home")  # redirect to home page, for now
-            return redirect(
-                "htest-question", progress_id=saved_progress.id  # next question
-            )
+            # Finish the test (this was the last question)
+            if next_question is None:
+                return redirect("htest-result", progress_id=saved_progress.id)
+            # Next question
+            return redirect("htest-question", progress_id=saved_progress.id)
     else:
         form = SelectAnswerForm(question_obj=current_question)
 
@@ -147,3 +147,21 @@ def htest_question(request, progress_id=None):
         "total_questions": Question.objects.count(),
     }
     return render(request, "hyiptest/htest_question.html", context)
+
+
+class HtestResultView(generic.TemplateView):
+    template_name = "hyiptest/htest_result.html"
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+
+        def result_is_bad(result):
+            return result >= 100
+
+        context["result_is_bad"] = result_is_bad(
+            get_object_or_404(
+                HtestSnapshot, id=self.kwargs["progress_id"]
+            ).total_risk_score
+        )
+        return context

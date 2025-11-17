@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  {% if result_is_bad %}
+    {# Page for the bad result #}
+    <h1>The site is a pyramid.</h1>
+
+  {% else %}
+    {# Page for the "good" result #}
+    <h1>The site is probably not a pyramid.</h1>
+
+  {% endif %}
+{% endblock %}
