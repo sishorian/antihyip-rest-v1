@@ -5,6 +5,7 @@ from django.db.utils import IntegrityError
 from hyiptest.models import BadDomain, BadSite, Question
 
 
+# Example tests for a model
 class QuestionModelTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -83,7 +84,7 @@ class QuestionModelTest(test.TestCase):
         self.assertEqual(max_length, 200)
 
 
-# Don't do 'boring' tests for other models.
+# Don't do 'boring' tests for other models
 
 
 class BadSiteModelTest(test.TestCase):
