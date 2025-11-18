@@ -116,7 +116,9 @@ def htest_question(request, progress_id=None):
         )
 
     if request.method == "POST":
-        form = SelectAnswerForm(request.POST, question_obj=current_question)
+        form = SelectAnswerForm(
+            request.POST, answer_queryset=current_question.answers.all()
+        )
         if form.is_valid():
             saved_progress.total_risk_score += form.cleaned_data[
                 "selected_answer"
@@ -136,7 +138,7 @@ def htest_question(request, progress_id=None):
             # Next question
             return redirect("htest-question", progress_id=saved_progress.id)
     else:
-        form = SelectAnswerForm(question_obj=current_question)
+        form = SelectAnswerForm(answer_queryset=current_question.answers.all())
 
     context = {
         "form": form,

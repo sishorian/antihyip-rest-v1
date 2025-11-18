@@ -39,12 +39,13 @@ class SelectAnswerFormTest(test.TestCase):
     def test_answer_selected(self):
         form = SelectAnswerForm(
             data={"selected_answer": Answer.objects.get(text="Bad answer")},
-            question_obj=Question.objects.get(),
+            answer_queryset=Answer.objects.all(),
         )
         self.assertTrue(form.is_valid())
 
     def test_answer_not_selected(self):
         form = SelectAnswerForm(
-            data={"selected_answer": None}, question_obj=Question.objects.get()
+            data={"selected_answer": None},
+            answer_queryset=Answer.objects.all(),
         )
         self.assertFalse(form.is_valid())

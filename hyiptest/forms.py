@@ -44,6 +44,6 @@ class SelectAnswerForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        question_obj = kwargs.pop("question_obj")
+        answer_queryset = kwargs.pop("answer_queryset")
         super().__init__(*args, **kwargs)
-        self.fields["selected_answer"].queryset = question_obj.answers.all()
+        self.fields["selected_answer"].queryset = answer_queryset
