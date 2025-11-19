@@ -144,6 +144,7 @@ class Question(UUIDTimestampsModel):
     def get_absolute_url(self):
         return reverse("question-detail", kwargs={"pk": self.pk})
 
+    # TODO: Custom ordering
     class Meta(UUIDTimestampsModel.Meta):  # Django will set abstract=False.
         constraints = [
             models.UniqueConstraint(
@@ -159,6 +160,7 @@ class Answer(UUIDTimestampsModel):
     Model representing an answer to a specific question.
     """
 
+    # TODO: Meta.order_with_respect_to
     text = models.CharField(max_length=100, help_text=_("The answer itself"))
     description = models.CharField(
         max_length=200,
@@ -195,6 +197,7 @@ class HtestSnapshot(UUIDTimestampsModel):
         blank=True,
         help_text=_("Question the user is currently stuck at"),
     )
+    # TODO: Store answers themselves
     total_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
         default=0,
         help_text=_("Accumulated score so far"),
