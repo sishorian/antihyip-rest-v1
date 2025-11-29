@@ -1,8 +1,9 @@
 import uuid
 
+from django.contrib import admin
 from django.core.validators import DomainNameValidator
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.db.models.functions import Lower
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -197,11 +198,20 @@ class HtestSnapshot(UUIDTimestampsModel):
         blank=True,
         help_text=_("Question the user is currently stuck at"),
     )
-    # TODO: Store answers themselves
     total_risk_score = models.PositiveSmallIntegerField(  # max 32767 = 327 questions
         default=0,
         help_text=_("Accumulated score so far"),
     )
+    # To replace total_risk_score in the future
+    selected_answers = models.ManyToManyField(
+        Answer, help_text=_("Answers the user has selected")
+    )
+
+    @admin.display(description=_("Total Risk Score"))
+    def get_total_risk_score(self):
+        return self.selected_answers.aggregate(total_risk_score=Sum("risk_score"))[
+            "total_risk_score"
+        ]
 
     def get_absolute_url(self):
         return reverse("htestsnapshot-detail", kwargs={"pk": self.pk})
