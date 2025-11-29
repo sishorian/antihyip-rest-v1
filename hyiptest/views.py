@@ -120,9 +120,7 @@ def htest_question(request, progress_id=None):
             request.POST, answer_queryset=current_question.answers.all()
         )
         if form.is_valid():
-            saved_progress.total_risk_score += form.cleaned_data[
-                "selected_answer"
-            ].risk_score
+            saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
 
             # Find the questions after the current one, order them, get next
             next_question = (
@@ -164,6 +162,6 @@ class HtestResultView(generic.TemplateView):
         context["result_is_bad"] = result_is_bad(
             get_object_or_404(
                 HtestSnapshot, id=self.kwargs["progress_id"]
-            ).total_risk_score
+            ).get_total_risk_score()
         )
         return context

@@ -34,9 +34,9 @@
           </td>
           <td>
             {% if htestsnapshot.question_in_progress %}
-              <a href="{% url 'htest-question' htestsnapshot.id %}">-</a>
+              <a href="{% url 'htest-question' htestsnapshot.id %}">N/A</a>
             {% else %}
-              <a href="{% url 'htest-result' htestsnapshot.id %}">{{ htestsnapshot.total_risk_score }}</a>
+              <a href="{% url 'htest-result' htestsnapshot.id %}">{{ htestsnapshot.get_total_risk_score }}</a>
             {% endif %}
           </td>
           <td>{{ htestsnapshot.created_at }}</td>

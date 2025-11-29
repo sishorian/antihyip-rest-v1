@@ -248,10 +248,7 @@ class HtestSnapshotListViewTest(test.TestCase):
         total_snapshots = 22
 
         for i in range(1, total_snapshots + 1):
-            HtestSnapshot.objects.create(
-                question_in_progress=None,
-                total_risk_score=0,
-            )
+            HtestSnapshot.objects.create()
 
     def setUp(self):
         self.url = reverse("htestsnapshot-list")
@@ -280,10 +277,10 @@ class HtestSnapshotListViewTest(test.TestCase):
 class HtestSnapshotDetailViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        HtestSnapshot.objects.create(
-            question_in_progress=None,
-            total_risk_score=69,
-        )
+        question = Question.objects.create(text="Test question")
+        Answer.objects.create(text="Test answer", question=question, risk_score=69)
+        snapshot = HtestSnapshot.objects.create(question_in_progress=None)
+        snapshot.selected_answers.add(Answer.objects.get(text="Test answer"))
 
     def setUp(self):
         self.snapshot = HtestSnapshot.objects.get()
@@ -388,12 +385,23 @@ class HtestQuestionViewTest(test.TestCase):
 class HtestResultViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
-        HtestSnapshot.objects.create(question_in_progress=None, total_risk_score=100)
-        HtestSnapshot.objects.create(question_in_progress=None, total_risk_score=0)
+        question = Question.objects.create(text="Test question")
+        Answer.objects.create(text="Bad test answer", question=question, risk_score=100)
+        Answer.objects.create(text="Good test answer", question=question, risk_score=0)
+        bad_progress = HtestSnapshot.objects.create(question_in_progress=None)
+        good_progress = HtestSnapshot.objects.create(question_in_progress=None)
+        bad_progress.selected_answers.add(Answer.objects.get(text="Bad test answer"))
+        good_progress.selected_answers.add(Answer.objects.get(text="Good test answer"))
 
     def setUp(self):
-        self.bad_progress = HtestSnapshot.objects.get(total_risk_score=100)
-        self.good_progress = HtestSnapshot.objects.get(total_risk_score=0)
+        bad_answer = Answer.objects.get(text="Bad test answer")
+        good_answer = Answer.objects.get(text="Good test answer")
+        self.bad_progress = HtestSnapshot.objects.get(
+            selected_answers__in=[bad_answer]  # that has bad_answer in selected_answers
+        )
+        self.good_progress = HtestSnapshot.objects.get(
+            selected_answers__in=[good_answer]
+        )
 
     def test_bad_result_loads_correctly(self):
         response = self.client.get(
