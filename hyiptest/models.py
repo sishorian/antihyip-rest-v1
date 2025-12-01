@@ -210,3 +210,6 @@ class HtestSnapshot(UUIDTimestampsModel):
 
     def get_absolute_url(self):
         return reverse("htestsnapshot-detail", kwargs={"pk": self.pk})
+
+    class Meta(UUIDTimestampsModel.Meta):
+        ordering = ["-updated_at"]

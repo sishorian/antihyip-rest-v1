@@ -247,7 +247,7 @@ class HtestSnapshotListViewTest(test.TestCase):
     def setUpTestData(cls):
         total_snapshots = 22
 
-        for i in range(1, total_snapshots + 1):
+        for _unused in range(1, total_snapshots + 1):
             HtestSnapshot.objects.create()
 
     def setUp(self):
