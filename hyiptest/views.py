@@ -12,6 +12,9 @@ from hyiptest.models import BadDomain, BadSite, HtestSnapshot, Question
 logger = logging.getLogger(__name__)
 
 
+# Home page
+
+
 class HomePageView(generic.TemplateView):
     template_name = "home.html"
 
@@ -28,32 +31,40 @@ class BadSiteDetailView(generic.DetailView):
     model = BadSite
 
 
-def search_domain(request):
-    """
-    View function for searching domain in the fraud database.
-    """
-    context = {
-        "form": None,  # must be assigned later
-        "query": None,
-        "search_executed": False,
-        "found_badsite": None,
-    }
+# Search domain
 
-    if "q" in request.GET:  # submitted form
-        context["form"] = SearchDomainForm(request.GET)
-        context["query"] = request.GET["q"]
-        if context["form"].is_valid():
-            context["search_executed"] = True
-            try:
-                context["found_badsite"] = BadDomain.objects.get(
-                    name=context["query"]
-                ).site
-            except BadDomain.DoesNotExist:
-                context["found_badsite"] = None  # equivalent to just `pass`
-    else:  # new form
-        context["form"] = SearchDomainForm()
 
-    return render(request, "hyiptest/search_domain.html", context)
+class SearchDomainView(generic.TemplateView):
+    """
+    View for searching domain in the fraud database.
+    """
+
+    template_name = "hyiptest/search_domain.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # New search form requested
+        if "q" not in self.request.GET:
+            context["form"] = SearchDomainForm()
+            context["executed_query"] = None  # just to be explicit
+            return context
+
+        # Search submitted
+        context["form"] = SearchDomainForm(self.request.GET)
+        if not context["form"].is_valid():
+            context["executed_query"] = None
+            return context
+
+        # Search executed
+        context["executed_query"] = self.request.GET["q"]
+        try:
+            context["found_badsite"] = BadDomain.objects.get(
+                name=context["executed_query"]
+            ).site
+        except BadDomain.DoesNotExist:
+            context["found_badsite"] = None  # just to be explicit
+        return context
 
 
 # Question

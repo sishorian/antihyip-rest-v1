@@ -11,10 +11,10 @@
     <button type="submit">Search</button>
   </form>
 
-  {% if search_executed %}
+  {% if executed_query %}
     <hr />
     <p>
-      <strong>Your search:</strong> {{ query }}
+      <strong>Your search:</strong> {{ executed_query }}
     </p>
 
     {% if found_badsite %}

@@ -25,7 +25,7 @@ urlpatterns += [
 
 # Check website domain
 urlpatterns += [
-    path("search-domain/", views.search_domain, name="search-domain"),
+    path("search-domain/", views.SearchDomainView.as_view(), name="search-domain"),
 ]
 
 # Question
