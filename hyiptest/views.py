@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import BadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -5,6 +7,9 @@ from django.views import generic
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
 from hyiptest.models import BadDomain, BadSite, HtestSnapshot, Question
+
+
+logger = logging.getLogger(__name__)
 
 
 class HomePageView(generic.TemplateView):
@@ -98,12 +103,11 @@ def htest_question(request, progress_id=None):
     """
 
     if progress_id is None:  # user takes new test
-        current_question = (
-            Question.objects.order_by().first()  # start with the first created question
-        )
-        HtestSnapshot.objects.filter(
-            question_in_progress__isnull=False
-        ).delete()  # delete all previous incomplete tests, for now
+        current_question = Question.objects.order_by("created_at").first()
+        previous_question = None  # shouldn't be any questions created before the first
+        # Delete all previous incomplete tests, for now
+        HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
+        # New save
         saved_progress = HtestSnapshot.objects.create(
             question_in_progress=current_question
         )
@@ -114,32 +118,58 @@ def htest_question(request, progress_id=None):
         current_question = Question.objects.get(
             id=saved_progress.question_in_progress.id
         )
-
-    if request.method == "POST":
-        form = SelectAnswerForm(
-            request.POST, answer_queryset=current_question.answers.all()
+        previous_question = (  # previously created question
+            Question.objects.filter(created_at__lt=current_question.created_at)
+            .order_by("-created_at")
+            .first()
         )
-        if form.is_valid():
-            saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
 
-            # Find the questions after the current one, order them, get next
-            next_question = (
-                Question.objects.filter(created_at__gt=current_question.created_at)
-                .order_by("created_at")
-                .first()
-            )
+    answer_queryset = current_question.answers.all()
+    next_question = (  # later created question
+        Question.objects.filter(created_at__gt=current_question.created_at)
+        .order_by("created_at")
+        .first()
+    )
+    for _unused in range(1):  # for `break` functionality
+        if request.method != "POST":
+            form = SelectAnswerForm(answer_queryset=answer_queryset)
+            break
+
+        form = SelectAnswerForm(request.POST, answer_queryset=answer_queryset)
+        if not form.is_valid():
+            break
+
+        # If a new answer "contradicts" previous, update it
+        # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
+        selected_before = answer_queryset.order_by().intersection(
+            saved_progress.selected_answers.all().order_by()
+        )
+        if selected_before.exists():
+            logger.debug("Removing previous contradicting answers: %s", selected_before)
+            saved_progress.selected_answers.remove(*selected_before)
+            pass
+
+        saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
+
+        if "submit-previous" in request.POST and previous_question is None:
+            break  # just don't do anything
+        if "submit-previous" in request.POST:
+            saved_progress.question_in_progress = previous_question
+            saved_progress.save()
+            return redirect("htest-question", progress_id=saved_progress.id)
+
+        if "submit-next" in request.POST and next_question is None:
+            saved_progress.question_in_progress = None
+            saved_progress.save()
+            return redirect("htest-result", progress_id=saved_progress.id)
+        if "submit-next" in request.POST:
             saved_progress.question_in_progress = next_question
             saved_progress.save()
-            # Finish the test (this was the last question)
-            if next_question is None:
-                return redirect("htest-result", progress_id=saved_progress.id)
-            # Next question
             return redirect("htest-question", progress_id=saved_progress.id)
-    else:
-        form = SelectAnswerForm(answer_queryset=current_question.answers.all())
+        # Do nothing if somehow neither button was pressed
 
     context = {
-        "form": form,
+        "form": form,  # pyright: ignore[reportPossiblyUnboundVariable] # false positive?
         "question": current_question,
         "question_position": Question.objects.filter(
             created_at__lte=current_question.created_at  # lt -> 0..(n-1), lte -> 1..n

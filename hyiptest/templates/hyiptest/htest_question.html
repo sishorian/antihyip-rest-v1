@@ -7,6 +7,7 @@
   <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Next">
+    <input type="submit" name="submit-previous" value="Previous">
+    <input type="submit" name="submit-next" value="Next">
   </form>
 {% endblock %}
