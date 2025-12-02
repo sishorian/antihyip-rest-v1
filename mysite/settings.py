@@ -143,11 +143,11 @@ LOGGING = {
     },
     "formatters": {
         "verbose": {
-            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "LOGGER {name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{name}: {levelname}: {message}",
+            "format": "LOGGER {name} {levelname} {message}",
             "style": "{",
         },
     },
