@@ -124,9 +124,6 @@ class HtestQuestionView(generic.FormView):
 
         progress_id = self.kwargs["progress_id"]
         if progress_id is None:  # new test created
-            # Delete all previous incomplete tests, for now
-            HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
-
             current_question = Question.objects.order_by("created_at").first()
             saved_progress = HtestSnapshot.objects.create(
                 question_in_progress=current_question
