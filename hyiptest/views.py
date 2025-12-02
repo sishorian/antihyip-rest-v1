@@ -224,7 +224,7 @@ class HtestResultView(generic.TemplateView):
 
         context["result_is_bad"] = result_is_bad(
             get_object_or_404(
-                HtestSnapshot, id=self.kwargs["progress_id"]
+                HtestSnapshot, id=kwargs["progress_id"]
             ).get_total_risk_score()
         )
         return context
