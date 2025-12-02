@@ -75,12 +75,13 @@ urlpatterns += [
 urlpatterns += [
     path(
         "test/",
-        views.htest_question,
+        views.HtestQuestionView.as_view(),
+        {"progress_id": None},
         name="htest-question",
     ),
     path(
         "test/<uuid:progress_id>/",
-        views.htest_question,
+        views.HtestQuestionView.as_view(),
         name="htest-question",
     ),
     path(

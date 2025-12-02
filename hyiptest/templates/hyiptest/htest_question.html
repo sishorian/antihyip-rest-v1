@@ -1,8 +1,8 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Test: Question {{ question_position }}/{{ total_questions }}</h1>
-  <p>{{ question.text }}</p>
+  <h1>Test: Question {{ current_question_position }}/{{ total_questions }}</h1>
+  <p>{{ current_question.text }}</p>
 
   <form action="" method="post">
     {% csrf_token %}

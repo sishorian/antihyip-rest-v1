@@ -106,88 +106,122 @@ class HtestSnapshotDetailView(generic.DetailView):
     model = HtestSnapshot
 
 
-# htest - short for hyiptest
-# Just `test` can be confused with unittest.
-def htest_question(request, progress_id=None):
+# HyipTest (Htest)
+# Just `test_` can be confused with unittest
+
+
+class HtestQuestionView(generic.View):
     """
-    View function for asking user one question from the test.
+    View for asking user one question from the test.
     """
 
-    if progress_id is None:  # user takes new test
-        current_question = Question.objects.order_by("created_at").first()
-        previous_question = None  # shouldn't be any questions created before the first
-        # Delete all previous incomplete tests, for now
-        HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
-        # New save
-        saved_progress = HtestSnapshot.objects.create(
-            question_in_progress=current_question
-        )
-    else:
-        saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
-        if saved_progress.question_in_progress is None:
-            raise BadRequest("Attempt to resume a test that is already finised")
-        current_question = Question.objects.get(
-            id=saved_progress.question_in_progress.id
-        )
-        previous_question = (  # previously created question
-            Question.objects.filter(created_at__lt=current_question.created_at)
+    def setup(self, request, *args, **kwargs):
+        if kwargs["progress_id"] is None:  # new test created
+            # Delete all previous incomplete tests, for now
+            HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
+
+            kwargs["current_question"] = Question.objects.order_by("created_at").first()
+            kwargs["saved_progress"] = HtestSnapshot.objects.create(
+                question_in_progress=kwargs["current_question"]
+            )
+        else:  # test in progress or resumed
+            kwargs["saved_progress"] = get_object_or_404(
+                HtestSnapshot, id=kwargs["progress_id"]
+            )
+            kwargs["current_question"] = kwargs["saved_progress"].question_in_progress
+            if kwargs["current_question"] is None:
+                raise BadRequest("Attempt to resume a test that is already finised")
+
+        # Previously created question, should be None on the first question
+        kwargs["previous_question"] = (
+            Question.objects.filter(
+                created_at__lt=kwargs["current_question"].created_at
+            )
             .order_by("-created_at")
             .first()
         )
+        # Later created question
+        kwargs["next_question"] = (
+            Question.objects.filter(
+                created_at__gt=kwargs["current_question"].created_at
+            )
+            .order_by("created_at")
+            .first()
+        )
+        # Answers belonging to current_question
+        kwargs["displayed_answers"] = kwargs["current_question"].answers.all()
 
-    answer_queryset = current_question.answers.all()
-    next_question = (  # later created question
-        Question.objects.filter(created_at__gt=current_question.created_at)
-        .order_by("created_at")
-        .first()
-    )
-    for _unused in range(1):  # for `break` functionality
-        if request.method != "POST":
-            form = SelectAnswerForm(answer_queryset=answer_queryset)
-            break
+        kwargs["current_question_position"] = Question.objects.filter(
+            # lt -> 0..(n-1), lte -> 1..n
+            created_at__lte=kwargs["current_question"].created_at
+        ).count()
+        kwargs["total_questions"] = Question.objects.count()
 
-        form = SelectAnswerForm(request.POST, answer_queryset=answer_queryset)
-        if not form.is_valid():
-            break
+        # request -> self.request; args -> self.args; kwargs -> self.kwargs
+        super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        # setup() kwargs don't get passed here, only self.kwargs
+        self.kwargs["form"] = SelectAnswerForm(
+            answer_queryset=self.kwargs["displayed_answers"]
+        )
+        return render(request, "hyiptest/htest_question.html", self.kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.kwargs["form"] = SelectAnswerForm(
+            request.POST, answer_queryset=self.kwargs["displayed_answers"]
+        )
+        if not self.kwargs["form"].is_valid():
+            return render(request, "hyiptest/htest_question.html", self.kwargs)
 
         # If a new answer "contradicts" previous, update it
         # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
-        selected_before = answer_queryset.order_by().intersection(
-            saved_progress.selected_answers.all().order_by()
+        selected_before = (
+            self.kwargs["displayed_answers"]
+            .order_by()
+            .intersection(
+                self.kwargs["saved_progress"].selected_answers.all().order_by()
+            )
         )
         if selected_before.exists():
             logger.debug("Removing previous contradicting answers: %s", selected_before)
-            saved_progress.selected_answers.remove(*selected_before)
-            pass
+            self.kwargs["saved_progress"].selected_answers.remove(*selected_before)
 
-        saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
+        self.kwargs["saved_progress"].selected_answers.add(
+            self.kwargs["form"].cleaned_data["selected_answer"]
+        )
 
-        if "submit-previous" in request.POST and previous_question is None:
-            break  # just don't do anything
+        if (
+            "submit-previous" in request.POST
+            and self.kwargs["previous_question"] is None
+        ):
+            # Just refresh form, for now
+            return render(request, "hyiptest/htest_question.html", self.kwargs)
         if "submit-previous" in request.POST:
-            saved_progress.question_in_progress = previous_question
-            saved_progress.save()
-            return redirect("htest-question", progress_id=saved_progress.id)
+            self.kwargs["saved_progress"].question_in_progress = self.kwargs[
+                "previous_question"
+            ]
+            self.kwargs["saved_progress"].save()
+            return redirect(
+                "htest-question", progress_id=self.kwargs["saved_progress"].id
+            )
 
-        if "submit-next" in request.POST and next_question is None:
-            saved_progress.question_in_progress = None
-            saved_progress.save()
-            return redirect("htest-result", progress_id=saved_progress.id)
+        if "submit-next" in request.POST and self.kwargs["next_question"] is None:
+            self.kwargs["saved_progress"].question_in_progress = None
+            self.kwargs["saved_progress"].save()
+            return redirect(
+                "htest-result", progress_id=self.kwargs["saved_progress"].id
+            )
         if "submit-next" in request.POST:
-            saved_progress.question_in_progress = next_question
-            saved_progress.save()
-            return redirect("htest-question", progress_id=saved_progress.id)
-        # Do nothing if somehow neither button was pressed
+            self.kwargs["saved_progress"].question_in_progress = self.kwargs[
+                "next_question"
+            ]
+            self.kwargs["saved_progress"].save()
+            return redirect(
+                "htest-question", progress_id=self.kwargs["saved_progress"].id
+            )
 
-    context = {
-        "form": form,  # pyright: ignore[reportPossiblyUnboundVariable] # false positive?
-        "question": current_question,
-        "question_position": Question.objects.filter(
-            created_at__lte=current_question.created_at  # lt -> 0..(n-1), lte -> 1..n
-        ).count(),
-        "total_questions": Question.objects.count(),
-    }
-    return render(request, "hyiptest/htest_question.html", context)
+        raise BadRequest("Form submitted but neither action was triggered")
 
 
 class HtestResultView(generic.TemplateView):
