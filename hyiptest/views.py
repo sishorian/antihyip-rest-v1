@@ -124,7 +124,7 @@ class HtestQuestionView(generic.FormView):
 
         progress_id = self.kwargs["progress_id"]
         if progress_id is None:  # new test created
-            current_question = Question.objects.order_by("created_at").first()
+            current_question = Question.objects.earliest("created_at")
             saved_progress = HtestSnapshot.objects.create(
                 question_in_progress=current_question
             )
@@ -133,24 +133,35 @@ class HtestQuestionView(generic.FormView):
             current_question = saved_progress.question_in_progress
             if current_question is None:
                 raise BadRequest("Attempt to resume a test that is already finised")
+        # Answers belonging to current_question
+        displayed_answers = current_question.answers.all()
 
         # Previously created question, should be None on the first question
-        self.kwargs["previous_question"] = (
-            Question.objects.filter(created_at__lt=current_question.created_at)
-            .order_by("-created_at")
-            .first()
-        )
+        self.kwargs["previous_question"] = Question.objects.filter(
+            created_at__lt=current_question.created_at
+        ).last()  # automatically ordered by Meta.ordering
         # Later created question
-        self.kwargs["next_question"] = (
-            Question.objects.filter(created_at__gt=current_question.created_at)
-            .order_by("created_at")
+        self.kwargs["next_question"] = Question.objects.filter(
+            created_at__gt=current_question.created_at
+        ).first()
+        # Displayed answer that was already selected in saved_progress
+        self.kwargs["selected_before"] = (
+            # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
+            displayed_answers.order_by()
+            .intersection(saved_progress.selected_answers.all().order_by())
             .first()
         )
-        # Answers belonging to current_question
-        self.kwargs["displayed_answers"] = current_question.answers.all()
         #
         self.kwargs["current_question"] = current_question
         self.kwargs["saved_progress"] = saved_progress
+        self.kwargs["displayed_answers"] = displayed_answers
+
+    def get_initial(self):
+        """Return the initial data for the form."""
+        selected_before = self.kwargs["selected_before"]
+        if selected_before is None:
+            return {}
+        return {"selected_answer": selected_before}
 
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
@@ -161,18 +172,14 @@ class HtestQuestionView(generic.FormView):
     def form_valid(self, form):
         """Actions performed if the submitted form is valid."""
         saved_progress = self.kwargs["saved_progress"]
-        displayed_answers = self.kwargs["displayed_answers"]
 
-        # If a new answer "contradicts" previous, update it
-        selected_before = (
-            # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
-            displayed_answers.order_by().intersection(
-                saved_progress.selected_answers.all().order_by()
+        # If a new answer "contradicts" previous, change it
+        selected_before = self.kwargs["selected_before"]
+        if selected_before is not None:
+            logger.debug(
+                "Removing previous contradicting answer: %s", repr(selected_before)
             )
-        )
-        if selected_before.exists():
-            logger.debug("Removing previous contradicting answers: %s", selected_before)
-            saved_progress.selected_answers.remove(*selected_before)
+            saved_progress.selected_answers.remove(selected_before)
 
         # From the docs, this won't add duplicates
         saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
