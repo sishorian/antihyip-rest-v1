@@ -209,12 +209,14 @@ class HtestQuestionView(generic.FormView):
     def get_context_data(self, **kwargs):
         """Insert data into the template context."""
         current_question = self.kwargs["current_question"]
-        kwargs["current_question"] = current_question
         kwargs["current_question_position"] = Question.objects.filter(
             # lt -> 0..(n-1), lte -> 1..n
             created_at__lte=current_question.created_at
         ).count()
         kwargs["total_questions"] = Question.objects.count()
+        kwargs["current_question"] = current_question
+        kwargs["previous_question"] = self.kwargs["previous_question"]
+        kwargs["next_question"] = self.kwargs["next_question"]
 
         return super().get_context_data(**kwargs)
 
