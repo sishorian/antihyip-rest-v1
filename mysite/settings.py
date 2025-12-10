@@ -154,9 +154,10 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": local_settings.LOGLEVEL,
-            "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
             "formatter": "simple",
+            # To print logs in test, pass `--debug-mode`
+            "filters": ["require_debug_true"],
         },
     },
     "loggers": {

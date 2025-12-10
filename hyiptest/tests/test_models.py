@@ -2,7 +2,7 @@ from django import test
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from hyiptest.models import BadDomain, BadSite, Question
+from hyiptest.models import Answer, BadDomain, BadSite, HtestSnapshot, Question
 
 
 # See QuestionModelTest for a more verbose example for a model test class
@@ -136,7 +136,7 @@ class QuestionModelTest(test.TestCase):
         Even if the letters have different case.
         """
         with self.assertRaises(IntegrityError):
-            Question.objects.create(text="iS IT a qUEstion fOr QuESTIonModelTest?")
+            Question.objects.create(text="iS IT a qUEstion fOr QuestionModelTest?")
 
     # 'description' field
 
@@ -155,3 +155,44 @@ class QuestionModelTest(test.TestCase):
         question = Question.objects.get()
         max_length = question._meta.get_field("description").max_length
         self.assertEqual(max_length, 200)
+
+
+class AnswerModelTest(test.TestCase):
+    def test_error_on_null_question(self):
+        """
+        Ensure Answer with no `question` can't be created.
+        """
+        with self.assertRaises(IntegrityError):
+            Answer.objects.create(
+                text="Answer with no question", question=None, risk_score=69
+            )
+
+    def test_error_on_null_risk_score(self):
+        """
+        Ensure Answer with no `risk_score` can't be created.
+        """
+        question = Question.objects.create(text="Test Question")
+        with self.assertRaises(IntegrityError):
+            Answer.objects.create(text="Answer with no question", question=question)
+
+
+class HtestSnapshotModelTest(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        question1 = Question.objects.create(text="Test Question 1")
+        question2 = Question.objects.create(text="Test Question 2")
+        answer_q1 = Answer.objects.create(
+            text="Answer q1", risk_score=33, question=question1
+        )
+        answer_q2 = Answer.objects.create(
+            text="Answer q2", risk_score=66, question=question2
+        )
+        snapshot = HtestSnapshot.objects.create(question_in_progress=None)
+        snapshot.selected_answers.set([answer_q1, answer_q2])
+
+    def test_get_total_risk_score(self):
+        """
+        Ensure get_total_risk_score() method works correctly.
+        """
+        snapshot = HtestSnapshot.objects.get()
+        self.assertEqual(snapshot.get_total_risk_score(), 99)

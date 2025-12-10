@@ -1,9 +1,13 @@
+import logging
 import uuid
 
 from django import test
 from django.urls import reverse
 
 from hyiptest.models import Answer, BadDomain, BadSite, HtestSnapshot, Question
+
+
+logger = logging.getLogger(__name__)
 
 
 class HomePageViewTest(test.TestCase):
@@ -280,7 +284,7 @@ class HtestSnapshotDetailViewTest(test.TestCase):
         question = Question.objects.create(text="Test question")
         Answer.objects.create(text="Test answer", question=question, risk_score=69)
         snapshot = HtestSnapshot.objects.create(question_in_progress=None)
-        snapshot.selected_answers.add(Answer.objects.get(text="Test answer"))
+        snapshot.selected_answers.add(question.answers.get())
 
     def setUp(self):
         self.snapshot = HtestSnapshot.objects.get()
@@ -320,16 +324,34 @@ class HtestQuestionViewTest(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.request["PATH_INFO"], "/test/")
         self.assertTemplateUsed(response, "hyiptest/htest_question.html")
+        # Ensure no initial answer is selected
+        self.assertDictEqual(response.context["form"].initial, {})
 
     def test_with_progress_loads_correctly(self):
         question = Question.objects.get(text="Test question 1?")
         progress = HtestSnapshot.objects.create(question_in_progress=question)
+
         response = self.client.get(
             reverse("htest-question", kwargs={"progress_id": progress.id})
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.request["PATH_INFO"], f"/test/{progress.id}/")
         self.assertTemplateUsed(response, "hyiptest/htest_question.html")
+        # Ensure no initial answer is selected
+        self.assertDictEqual(response.context["form"].initial, {})
+
+    def test_previously_selected_answer_is_on_form(self):
+        question = Question.objects.get(text="Test question 1?")
+        progress = HtestSnapshot.objects.create(question_in_progress=question)
+        initial_answer = question.answers.get(text="Bad answer")
+        progress.selected_answers.set([initial_answer])
+
+        response = self.client.get(
+            reverse("htest-question", kwargs={"progress_id": progress.id})
+        )
+        self.assertEqual(
+            response.context["form"].initial["selected_answer"], initial_answer
+        )
 
     def test_404_with_invalid_progress(self):
         response = self.client.get(
@@ -337,48 +359,75 @@ class HtestQuestionViewTest(test.TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_400_with_finished_progress(self):
+    def test_400_with_already_finished_progress(self):
         finished_progress = HtestSnapshot.objects.create(question_in_progress=None)
         response = self.client.get(
             reverse("htest-question", kwargs={"progress_id": finished_progress.id})
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_post_loads_correctly(self):
-        # New progress because the view will change it
+    def test_post_redirects_next_correctly(self):
         current_question = Question.objects.get(text="Test question 1?")
-        new_progress = HtestSnapshot.objects.create(
-            question_in_progress=current_question
-        )
+        progress = HtestSnapshot.objects.create(question_in_progress=current_question)
         response = self.client.post(
-            reverse("htest-question", kwargs={"progress_id": new_progress.id}),
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
-                "selected_answer": Answer.objects.get(
-                    text="Bad answer", question=current_question
-                ).id
+                "selected_answer": current_question.answers.get(text="Bad answer").id,
+                "submit-next": [""],  # from self.request.POST
             },
         )
+
+        progress = HtestSnapshot.objects.get()  # update snapshot
+        next_question = Question.objects.get(text="Test question 2?")
+        self.assertEqual(progress.question_in_progress, next_question)
         self.assertRedirects(
             response,
-            reverse("htest-question", kwargs={"progress_id": new_progress.id}),
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
         )
+
+    def test_post_redirects_previous_correctly(self):
+        current_question = Question.objects.get(text="Test question 2?")
+        progress = HtestSnapshot.objects.create(question_in_progress=current_question)
+        response = self.client.post(
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
+            {
+                "selected_answer": current_question.answers.get(text="Bad answer").id,
+                "submit-previous": [""],
+            },
+        )
+
+        progress = HtestSnapshot.objects.get()  # update snapshot
+        previous_question = Question.objects.get(text="Test question 1?")
+        self.assertEqual(progress.question_in_progress, previous_question)
+        self.assertRedirects(
+            response,
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
+        )
+
+    def test_post_400_on_missing_submit_action(self):
+        current_question = Question.objects.get(text="Test question 1?")
+        progress = HtestSnapshot.objects.create(question_in_progress=current_question)
+        response = self.client.post(
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
+            {
+                "selected_answer": current_question.answers.get(text="Bad answer").id,
+            },
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_post_finishes_correctly(self):
         # New progress because the view will change it
         current_question = Question.objects.get(text="Test question 2?")
-        new_progress = HtestSnapshot.objects.create(
-            question_in_progress=current_question
-        )
+        progress = HtestSnapshot.objects.create(question_in_progress=current_question)
         response = self.client.post(
-            reverse("htest-question", kwargs={"progress_id": new_progress.id}),
+            reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
-                "selected_answer": Answer.objects.get(
-                    text="Good answer", question=current_question
-                ).id
+                "selected_answer": current_question.answers.get(text="Bad answer").id,
+                "submit-next": [""],
             },
         )
         self.assertRedirects(
-            response, reverse("htest-result", kwargs={"progress_id": new_progress.id})
+            response, reverse("htest-result", kwargs={"progress_id": progress.id})
         )
 
 
@@ -386,12 +435,16 @@ class HtestResultViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         question = Question.objects.create(text="Test question")
-        Answer.objects.create(text="Bad test answer", question=question, risk_score=100)
-        Answer.objects.create(text="Good test answer", question=question, risk_score=0)
+        bad_answer = Answer.objects.create(
+            text="Bad test answer", question=question, risk_score=100
+        )
+        good_answer = Answer.objects.create(
+            text="Good test answer", question=question, risk_score=0
+        )
         bad_progress = HtestSnapshot.objects.create(question_in_progress=None)
         good_progress = HtestSnapshot.objects.create(question_in_progress=None)
-        bad_progress.selected_answers.add(Answer.objects.get(text="Bad test answer"))
-        good_progress.selected_answers.add(Answer.objects.get(text="Good test answer"))
+        bad_progress.selected_answers.add(bad_answer)
+        good_progress.selected_answers.add(good_answer)
 
     def setUp(self):
         bad_answer = Answer.objects.get(text="Bad test answer")

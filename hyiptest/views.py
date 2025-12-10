@@ -184,6 +184,8 @@ class HtestQuestionView(generic.FormView):
         # From the docs, this won't add duplicates
         saved_progress.selected_answers.add(form.cleaned_data["selected_answer"])
 
+        logger.debug("self.request.POST = %s", self.request.POST)  # for writing tests
+
         previous_question = self.kwargs["previous_question"]
         if "submit-previous" in self.request.POST and previous_question is None:
             # Just refresh form, for now
