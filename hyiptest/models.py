@@ -176,7 +176,6 @@ class Answer(UUIDTimestampsModel):
         help_text=_("The question it belongs to"),
     )
     risk_score = models.PositiveSmallIntegerField(
-        default=100,
         help_text=_("Bad points for a site"),
     )
 
