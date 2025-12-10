@@ -5,7 +5,80 @@ from django.db.utils import IntegrityError
 from hyiptest.models import BadDomain, BadSite, Question
 
 
-# Example tests for a model
+# See QuestionModelTest for a more verbose example for a model test class
+# Don't do 'boring' tests for other models
+
+
+class BadSiteModelTest(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        BadSite.objects.create(
+            name="Test One",
+            bad_type="test",
+        )
+
+    def test_name_lower_unique_constraint(self):
+        """
+        Ensure you can't create object with the same 'name' field.
+
+        Even if the letters have different case.
+        """
+        with self.assertRaises(IntegrityError):
+            BadSite.objects.create(name="TesT oNe")
+
+
+class BadDomainModelTest(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        badsite = BadSite.objects.create(
+            name="Test One",
+            bad_type="test",
+        )
+        BadDomain.objects.create(
+            name="testone.test",
+            site=badsite,
+        )
+
+    def setUp(self):
+        self.badsite = BadSite.objects.get(name="Test One")
+
+    def test_name_domain_validator(self):
+        """
+        Ensure that 'name' field accepts only domains.
+        """
+        baddomain = BadDomain(name="testone", site=self.badsite)
+        with self.assertRaises(ValidationError):
+            baddomain.full_clean()
+
+    def test_name_converted_lower(self):
+        """
+        Ensure that 'name' field is converted to lowercase on clean().
+        """
+        name = "tEStonE.cOm"
+        domain = BadDomain(name=name, site=self.badsite)
+        domain.full_clean()
+        self.assertEqual(domain.name, name.lower())
+
+    def test_name_lower_constraint(self):
+        """
+        Ensure you can't create object if 'name' field is not lowercase.
+
+        For cases where clean() is not run, e.g. when creating from shell.
+        """
+        with self.assertRaises(IntegrityError):
+            BadDomain.objects.create(name="testoNE.tESt")
+            # Btw, save() is not run here:
+            # BadDomain.objects.filter(name="testone.test").update(name="testoNE.tESt")
+
+    def test_site_related_name_domains(self):
+        """
+        Ensure the related object has correct backwards-relation Manager name.
+        """
+        field = self.badsite._meta.get_field("domains")
+        self.assertEqual(field.related_name, "domains")
+
+
+# Example test class for a model
 class QuestionModelTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -82,75 +155,3 @@ class QuestionModelTest(test.TestCase):
         question = Question.objects.get()
         max_length = question._meta.get_field("description").max_length
         self.assertEqual(max_length, 200)
-
-
-# Don't do 'boring' tests for other models
-
-
-class BadSiteModelTest(test.TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        BadSite.objects.create(
-            name="Test One",
-            bad_type="test",
-        )
-
-    def test_name_lower_unique_constraint(self):
-        """
-        Ensure you can't create object with the same 'name' field.
-
-        Even if the letters have different case.
-        """
-        with self.assertRaises(IntegrityError):
-            BadSite.objects.create(name="TesT oNe")
-
-
-class BadDomainModelTest(test.TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        badsite = BadSite.objects.create(
-            name="Test One",
-            bad_type="test",
-        )
-        BadDomain.objects.create(
-            name="testone.test",
-            site=badsite,
-        )
-
-    def setUp(self):
-        self.badsite = BadSite.objects.get(name="Test One")
-
-    def test_name_domain_validator(self):
-        """
-        Ensure that 'name' field accepts only domains.
-        """
-        baddomain = BadDomain(name="testone", site=self.badsite)
-        with self.assertRaises(ValidationError):
-            baddomain.full_clean()
-
-    def test_name_converted_lower(self):
-        """
-        Ensure that 'name' field is converted to lowercase on clean().
-        """
-        name = "tEStonE.cOm"
-        domain = BadDomain(name=name, site=self.badsite)
-        domain.full_clean()
-        self.assertEqual(domain.name, name.lower())
-
-    def test_name_lower_constraint(self):
-        """
-        Ensure you can't create object if 'name' field is not lowercase.
-
-        For cases where clean() is not run, e.g. when creating from shell.
-        """
-        with self.assertRaises(IntegrityError):
-            BadDomain.objects.create(name="testoNE.tESt")
-            # Btw, save() is not run here:
-            # BadDomain.objects.filter(name="testone.test").update(name="testoNE.tESt")
-
-    def test_site_related_name_domains(self):
-        """
-        Ensure the related object has correct backwards-relation Manager name.
-        """
-        field = self.badsite._meta.get_field("domains")
-        self.assertEqual(field.related_name, "domains")
