@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from hyiptest import views
 
@@ -7,6 +7,11 @@ urlpatterns = []
 # Home page
 urlpatterns += [
     path("", views.HomePageView.as_view(), name="home"),
+]
+
+# Django authentication urls (for login, logout, password management)
+urlpatterns += [
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
 # BadSite

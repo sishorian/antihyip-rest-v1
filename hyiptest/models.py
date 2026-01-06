@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.contrib import admin
 from django.core.validators import DomainNameValidator
 from django.db import models
@@ -199,6 +200,11 @@ class HtestSnapshot(UUIDTimestampsModel):
     )
     selected_answers = models.ManyToManyField(
         Answer, help_text=_("Answers the user has selected")
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        help_text=_("User that started the test"),
     )
 
     @admin.display(description=_("Total Risk Score"))

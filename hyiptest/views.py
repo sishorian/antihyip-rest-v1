@@ -1,6 +1,7 @@
 import logging
 
-from django.core.exceptions import BadRequest
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import BadRequest, SuspiciousOperation
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -110,7 +111,7 @@ class HtestSnapshotDetailView(generic.DetailView):
 # Just `test_` can be confused with unittest
 
 
-class HtestQuestionView(generic.FormView):
+class HtestQuestionView(LoginRequiredMixin, generic.FormView):
     """
     View for asking user one question from the test.
     """
@@ -123,13 +124,17 @@ class HtestQuestionView(generic.FormView):
         super().setup(request, *args, **kwargs)  # kwargs -> self.kwargs
 
         progress_id = self.kwargs["progress_id"]
-        if progress_id is None:  # new test created
+        # New test created
+        if progress_id is None:
             current_question = Question.objects.earliest("created_at")
             saved_progress = HtestSnapshot.objects.create(
-                question_in_progress=current_question
+                question_in_progress=current_question, user=request.user
             )
-        else:  # test in progress or resumed
+        # Test in progress or resumed
+        else:
             saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
+            if saved_progress.user != request.user:
+                raise SuspiciousOperation("Attempt to continue someone else's test")
             current_question = saved_progress.question_in_progress
             if current_question is None:
                 raise BadRequest("Attempt to resume a test that is already finised")
