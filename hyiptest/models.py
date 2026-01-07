@@ -186,9 +186,12 @@ class Answer(UUIDTimestampsModel):
 
 # htest - short for hyiptest
 # Just `test` can be confused with unittest.
-class HtestSnapshot(UUIDTimestampsModel):
+class HtestProgress(UUIDTimestampsModel):
     """
-    Model representing the status of a test.
+    Model representing a test instance started by user.
+
+    Can represent both completed and incomplete tests.
+    If test is completed, question_in_progress is null.
     """
 
     question_in_progress = models.ForeignKey(
@@ -196,7 +199,9 @@ class HtestSnapshot(UUIDTimestampsModel):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        help_text=_("Question the user is currently stuck at"),
+        help_text=_(
+            "Question currently displayed to the user, null if test is completed"
+        ),
     )
     selected_answers = models.ManyToManyField(
         Answer, help_text=_("Answers the user has selected")
@@ -214,7 +219,7 @@ class HtestSnapshot(UUIDTimestampsModel):
         ]
 
     def get_absolute_url(self):
-        return reverse("htestsnapshot-detail", kwargs={"pk": self.pk})
+        return reverse("htestprogress-detail", kwargs={"pk": self.pk})
 
     class Meta(UUIDTimestampsModel.Meta):
         ordering = ["-updated_at"]

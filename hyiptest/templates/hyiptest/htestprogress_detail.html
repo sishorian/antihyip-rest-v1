@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Test Progress Details</h1>
+
+  <p>
+    <strong>User:</strong> {{ htestprogress.user }}
+  </p>
+
+  <p>
+    <strong>Status:</strong>
+    {% if htestprogress.question_in_progress %}
+      Abandoned
+      (<a href="{% url 'htest-question' htestprogress.id %}">Resume test</a>)
+    {% else %}
+      Completed
+    {% endif %}
+  </p>
+
+  <p>
+    <strong>Question in progress:</strong>
+    {% if htestprogress.question_in_progress %}
+      "{{ htestprogress.question_in_progress.text }}"
+      (<a href="{{ htestprogress.question_in_progress.get_absolute_url }}">{{ htestprogress.question_in_progress.id }}</a>)
+    {% else %}
+      <strong>None</strong>
+    {% endif %}
+  </p>
+
+  <p>
+    <strong>Total Risk Score:</strong> {{ htestprogress.get_total_risk_score }}
+  </p>
+
+  <p>
+    <strong>ID:</strong> {{ htestprogress.id }}
+  </p>
+
+  <p>
+    <strong>Created at:</strong> {{ htestprogress.created_at }}
+  </p>
+
+  <p>
+    <strong>Updated at:</strong> {{ htestprogress.updated_at }}
+  </p>
+{% endblock %}

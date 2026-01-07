@@ -2,7 +2,7 @@ from django import test
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from hyiptest.models import Answer, BadDomain, BadSite, HtestSnapshot, Question
+from hyiptest.models import Answer, BadDomain, BadSite, HtestProgress, Question
 
 
 # See QuestionModelTest for a more verbose example for a model test class
@@ -176,7 +176,7 @@ class AnswerModelTest(test.TestCase):
             Answer.objects.create(text="Answer with no question", question=question)
 
 
-class HtestSnapshotModelTest(test.TestCase):
+class HtestProgressModelTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         question1 = Question.objects.create(text="Test Question 1")
@@ -187,12 +187,12 @@ class HtestSnapshotModelTest(test.TestCase):
         answer_q2 = Answer.objects.create(
             text="Answer q2", risk_score=66, question=question2
         )
-        snapshot = HtestSnapshot.objects.create(question_in_progress=None)
-        snapshot.selected_answers.set([answer_q1, answer_q2])
+        progress = HtestProgress.objects.create(question_in_progress=None)
+        progress.selected_answers.set([answer_q1, answer_q2])
 
     def test_get_total_risk_score(self):
         """
         Ensure get_total_risk_score() method works correctly.
         """
-        snapshot = HtestSnapshot.objects.get()
-        self.assertEqual(snapshot.get_total_risk_score(), 99)
+        progress = HtestProgress.objects.get()
+        self.assertEqual(progress.get_total_risk_score(), 99)

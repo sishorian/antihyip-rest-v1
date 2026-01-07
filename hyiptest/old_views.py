@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import generic
 
 from hyiptest.forms import SelectAnswerForm
-from hyiptest.models import HtestSnapshot, Question
+from hyiptest.models import HtestProgress, Question
 
 
 logger = logging.getLogger(__name__)
@@ -21,13 +21,13 @@ def htest_question(request, progress_id=None):
         current_question = Question.objects.order_by("created_at").first()
         previous_question = None  # shouldn't be any questions created before the first
         # Delete all previous incomplete tests, for now
-        HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
+        HtestProgress.objects.filter(question_in_progress__isnull=False).delete()
         # New save
-        saved_progress = HtestSnapshot.objects.create(
+        saved_progress = HtestProgress.objects.create(
             question_in_progress=current_question
         )
     else:
-        saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
+        saved_progress = get_object_or_404(HtestProgress, id=progress_id)
         if saved_progress.question_in_progress is None:
             raise BadRequest("Attempt to resume a test that is already finised")
         current_question = Question.objects.get(
@@ -103,15 +103,15 @@ class HtestQuestionView(generic.View):
     def setup(self, request, *args, **kwargs):
         if kwargs["progress_id"] is None:  # new test created
             # Delete all previous incomplete tests, for now
-            HtestSnapshot.objects.filter(question_in_progress__isnull=False).delete()
+            HtestProgress.objects.filter(question_in_progress__isnull=False).delete()
 
             kwargs["current_question"] = Question.objects.order_by("created_at").first()
-            kwargs["saved_progress"] = HtestSnapshot.objects.create(
+            kwargs["saved_progress"] = HtestProgress.objects.create(
                 question_in_progress=kwargs["current_question"]
             )
         else:  # test in progress or resumed
             kwargs["saved_progress"] = get_object_or_404(
-                HtestSnapshot, id=kwargs["progress_id"]
+                HtestProgress, id=kwargs["progress_id"]
             )
             kwargs["current_question"] = kwargs["saved_progress"].question_in_progress
             if kwargs["current_question"] is None:
@@ -226,12 +226,12 @@ class HtestQuestionView1(LoginRequiredMixin, generic.FormView):
         # New test created
         if progress_id is None:
             current_question = Question.objects.earliest("created_at")
-            saved_progress = HtestSnapshot.objects.create(
+            saved_progress = HtestProgress.objects.create(
                 question_in_progress=current_question, user=request.user
             )
         # Test in progress or resumed
         else:
-            saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
+            saved_progress = get_object_or_404(HtestProgress, id=progress_id)
             if saved_progress.user != request.user:
                 raise SuspiciousOperation("Attempt to continue someone else's test")
             current_question = saved_progress.question_in_progress

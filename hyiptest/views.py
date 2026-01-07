@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
-from hyiptest.models import BadDomain, BadSite, HtestSnapshot, Question
+from hyiptest.models import BadDomain, BadSite, HtestProgress, Question
 
 
 logger = logging.getLogger(__name__)
@@ -95,16 +95,16 @@ class QuestionDeleteView(generic.DeleteView):
     success_url = reverse_lazy("question-list")
 
 
-# HtestSnapshot
+# HtestProgress
 
 
-class HtestSnapshotListView(generic.ListView):
-    model = HtestSnapshot
+class HtestProgressListView(generic.ListView):
+    model = HtestProgress
     paginate_by = 20
 
 
-class HtestSnapshotDetailView(generic.DetailView):
-    model = HtestSnapshot
+class HtestProgressDetailView(generic.DetailView):
+    model = HtestProgress
 
 
 # HyipTest (Htest)
@@ -127,12 +127,13 @@ class HtestQuestionView(LoginRequiredMixin, generic.FormView):
         # New test created
         if progress_id is None:
             current_question = Question.objects.earliest("created_at")
-            saved_progress = HtestSnapshot.objects.create(
+            saved_progress = HtestProgress.objects.create(
                 question_in_progress=current_question, user=request.user
             )
+            logger.debug("Created HtestProgress instance: %s", saved_progress)
         # Test in progress or resumed
         else:
-            saved_progress = get_object_or_404(HtestSnapshot, id=progress_id)
+            saved_progress = get_object_or_404(HtestProgress, id=progress_id)
             if saved_progress.user != request.user:
                 raise SuspiciousOperation("Attempt to continue someone else's test")
             current_question = saved_progress.question_in_progress
@@ -240,7 +241,7 @@ class HtestResultView(generic.TemplateView):
 
         context["result_is_bad"] = result_is_bad(
             get_object_or_404(
-                HtestSnapshot, id=kwargs["progress_id"]
+                HtestProgress, id=kwargs["progress_id"]
             ).get_total_risk_score()
         )
         return context

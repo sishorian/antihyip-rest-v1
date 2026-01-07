@@ -20,27 +20,27 @@
       </tr>
     </thead>
     <tbody>
-      {% for htestsnapshot in htestsnapshot_list %}
+      {% for htestprogress in htestprogress_list %}
         <tr>
           <td>
-            <a href="{{ htestsnapshot.get_absolute_url }}">{{ htestsnapshot.id }}</a>
+            <a href="{{ htestprogress.get_absolute_url }}">{{ htestprogress.id }}</a>
           </td>
           <td>
-            {% if htestsnapshot.question_in_progress %}
+            {% if htestprogress.question_in_progress %}
               Abandoned
             {% else %}
               Completed
             {% endif %}
           </td>
           <td>
-            {% if htestsnapshot.question_in_progress %}
-              <a href="{% url 'htest-question' htestsnapshot.id %}">N/A</a>
+            {% if htestprogress.question_in_progress %}
+              <a href="{% url 'htest-question' htestprogress.id %}">N/A</a>
             {% else %}
-              <a href="{% url 'htest-result' htestsnapshot.id %}">{{ htestsnapshot.get_total_risk_score }}</a>
+              <a href="{% url 'htest-result' htestprogress.id %}">{{ htestprogress.get_total_risk_score }}</a>
             {% endif %}
           </td>
-          <td>{{ htestsnapshot.created_at }}</td>
-          <td>{{ htestsnapshot.updated_at }}</td>
+          <td>{{ htestprogress.created_at }}</td>
+          <td>{{ htestprogress.updated_at }}</td>
         </tr>
       {% empty %}
         <tr>
