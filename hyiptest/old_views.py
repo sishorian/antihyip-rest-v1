@@ -325,3 +325,134 @@ class HtestQuestionView1(LoginRequiredMixin, generic.FormView):
         kwargs["next_question"] = self.kwargs["next_question"]
 
         return super().get_context_data(**kwargs)
+
+
+# get_test_progress is called twice: first by get(), then post().
+class HtestQuestionView2(LoginRequiredMixin, generic.TemplateView):
+    """
+    View for asking user one question from the test.
+
+    Inheriting from generic.TemplateView
+    because using generic.FormView was too confusing.
+    """
+
+    template_name = "hyiptest/htest_question.html"
+
+    def get_test_progress(self, progress_id):
+        """
+        Return HtestProgress instance of the test.
+
+        Must be called only once.
+        """
+
+        # New test requested
+        if progress_id is None:
+            first_question = Question.objects.earliest("created_at")
+            progress = HtestProgress.objects.create(
+                question_in_progress=first_question, user=self.request.user
+            )
+
+            logger.debug("Created HtestProgress instance: %s", progress)
+            return progress
+
+        # Continuing previously created test
+        progress = get_object_or_404(HtestProgress, id=progress_id)
+        if progress.user != self.request.user:
+            raise SuspiciousOperation("Attempt to continue someone else's test")
+        if progress.question_in_progress is None:
+            raise BadRequest("Attempt to resume a test that is already finised")
+
+        return progress
+
+    def get_test_form(self, test_progress, form_data=None):
+        """
+        Create form for the test question.
+        """
+
+        displayed_answers = test_progress.question_in_progress.answers.all()
+        selected_before = (
+            # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
+            displayed_answers.order_by()
+            .intersection(test_progress.selected_answers.all().order_by())
+            .first()
+        )
+
+        if selected_before is None:
+            return SelectAnswerForm(data=form_data, answer_queryset=displayed_answers)
+        return SelectAnswerForm(
+            data=form_data,
+            initial={"selected_answer": selected_before},
+            answer_queryset=displayed_answers,
+        )
+
+    def get_context_data(self, progress, form, **kwargs):
+        context = super().get_context_data(**kwargs)  # handles self.extra_context
+
+        current_question = progress.question_in_progress
+        context["current_question"] = current_question
+        context["current_question_position"] = Question.objects.filter(
+            # questions created before current, lt -> 0..(n-1), lte -> 1..n
+            created_at__lte=current_question.created_at
+        ).count()
+        context["total_questions"] = Question.objects.count()
+
+        # These will be None on the first and the last question
+        context["previous_question"] = Question.objects.filter(
+            created_at__lt=current_question.created_at  # previously created questions
+        ).last()  # automatically ordered by Meta.ordering
+        context["next_question"] = Question.objects.filter(
+            created_at__gt=current_question.created_at  # later created questions
+        ).first()
+
+        context["form"] = form
+        return context
+
+    def get(self, request, *args, **kwargs):
+        progress = self.get_test_progress(kwargs["progress_id"])
+        context = self.get_context_data(
+            progress, self.get_test_form(progress), **kwargs
+        )
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        progress = self.get_test_progress(kwargs["progress_id"])
+        form = self.get_test_form(progress, request.POST)
+        context = self.get_context_data(progress, form, **kwargs)
+
+        if not form.is_valid():
+            return self.render_to_response(context)
+
+        displayed_answers = progress.question_in_progress.answers.all()
+        selected_before = (
+            # Remove `ORDER BY` SQL because it's incompatible with unions in SQLite
+            displayed_answers.order_by()
+            .intersection(progress.selected_answers.all().order_by())
+            .first()
+        )
+        # If a new answer "contradicts" previous, change it
+        if selected_before is not None:
+            logger.debug(
+                "Removing previous contradicting answer: %s", repr(selected_before)
+            )
+            progress.selected_answers.remove(selected_before)
+        # From the docs, this shouldn't add duplicates
+        progress.selected_answers.add(form.cleaned_data["selected_answer"])
+
+        previous_question = context["previous_question"]
+        if "submit-previous" in request.POST and previous_question is None:
+            raise BadRequest("Attempt to go to question previous to the first")
+        if "submit-previous" in request.POST:
+            progress.question_in_progress = previous_question
+            progress.save()
+            return redirect("htest-question", progress_id=progress.id)
+        next_question = context["next_question"]
+        if "submit-next" in request.POST and next_question is None:
+            progress.question_in_progress = None
+            progress.save()
+            return redirect("htest-result", progress_id=progress.id)
+        if "submit-next" in request.POST:
+            progress.question_in_progress = next_question
+            progress.save()
+            return redirect("htest-question", progress_id=progress.id)
+
+        raise BadRequest("Form submitted but neither action was triggered")

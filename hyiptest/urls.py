@@ -80,9 +80,8 @@ urlpatterns += [
 urlpatterns += [
     path(
         "test/",
-        views.HtestQuestionView.as_view(),
-        {"progress_id": None},
-        name="htest-question",
+        views.htest_start,
+        name="htest-start",
     ),
     path(
         "test/<uuid:progress_id>/",
