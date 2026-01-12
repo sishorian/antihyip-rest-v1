@@ -2,12 +2,15 @@ import logging
 import uuid
 
 from django import test
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from hyiptest.models import Answer, BadDomain, BadSite, HtestProgress, Question
 
 
 logger = logging.getLogger(__name__)
+
+user_model = get_user_model()
 
 
 class HomePageViewTest(test.TestCase):
@@ -249,8 +252,13 @@ class QuestionDeleteViewTest(test.TestCase):
 class HtestProgressListViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+
         for _unused in range(22):
-            HtestProgress.objects.create()
+            HtestProgress.objects.create(question_in_progress=None, user=test_user1)
 
     def setUp(self):
         self.url = reverse("htestprogress-list")
@@ -279,9 +287,17 @@ class HtestProgressListViewTest(test.TestCase):
 class HtestProgressDetailViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+
         question = Question.objects.create(text="Test question")
         Answer.objects.create(text="Test answer", question=question, risk_score=69)
-        progress = HtestProgress.objects.create(question_in_progress=None)
+
+        progress = HtestProgress.objects.create(
+            question_in_progress=None, user=test_user1
+        )
         progress.selected_answers.add(question.answers.get())
 
     def setUp(self):
@@ -300,35 +316,104 @@ class HtestProgressDetailViewTest(test.TestCase):
 # Htest
 
 
+class HtestStartViewTest(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        question = Question.objects.create(
+            text="Test question?",
+            description="Question for the test",
+        )
+        Answer.objects.create(text="Bad answer", risk_score=100, question=question)
+        Answer.objects.create(text="Good answer", risk_score=0, question=question)
+
+        test_user = user_model.objects.create_user(username="testuser", password="123")
+        test_user.save()
+
+    def test_redirects_to_login_if_not_logged_in(self):
+        response = self.client.get(reverse("htest-start"))
+        self.assertRedirects(response, "/accounts/login/?next=/test/")
+
+    def test_redirects_to_test_if_logged_in(self):
+        self.client.login(username="testuser", password="123")
+        response = self.client.get(reverse("htest-start"))
+
+        self.assertEqual(HtestProgress.objects.count(), 1)  # ensure only 1 was created
+        progress = HtestProgress.objects.get()
+        self.assertEqual(progress.question_in_progress.text, "Test question?")
+        self.assertEqual(progress.user.username, "testuser")
+        self.assertRedirects(response, f"/test/{progress.id}/")
+
+
 class HtestQuestionViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
         question1 = Question.objects.create(
             text="Test question 1?",
-            description="Question for the test.",
+            description="Question for the test",
         )
         Answer.objects.create(text="Bad answer", risk_score=100, question=question1)
         Answer.objects.create(text="Good answer", risk_score=0, question=question1)
 
         question2 = Question.objects.create(
             text="Test question 2?",
-            description="Question for the test.",
+            description="Question for the test",
         )
-        Answer.objects.create(text="Bad answer", risk_score=100, question=question2)
+        answer = Answer.objects.create(
+            text="Bad answer", risk_score=100, question=question2
+        )
         Answer.objects.create(text="Good answer", risk_score=0, question=question2)
 
-    def test_without_progress_loads_correctly(self):
-        response = self.client.get(reverse("htest-question"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.request["PATH_INFO"], "/test/")
-        self.assertTemplateUsed(response, "hyiptest/htest_question.html")
-        # Ensure no initial answer is selected
-        self.assertDictEqual(response.context["form"].initial, {})
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+        test_user2 = user_model.objects.create_user(
+            username="testuser2", password="456"
+        )
+        test_user2.save()
 
-    def test_with_progress_loads_correctly(self):
-        question = Question.objects.get(text="Test question 1?")
-        progress = HtestProgress.objects.create(question_in_progress=question)
+        HtestProgress.objects.create(question_in_progress=question1, user=test_user1)
+        progress2 = HtestProgress.objects.create(
+            question_in_progress=question2, user=test_user2
+        )
+        progress2.selected_answers.set([answer])
+        HtestProgress.objects.create(question_in_progress=None, user=test_user2)
 
+    def test_redirects_to_login_if_not_logged_in(self):
+        progress = HtestProgress.objects.first()  # just get any existing
+        response = self.client.get(
+            reverse("htest-question", kwargs={"progress_id": progress.id})
+        )
+        self.assertRedirects(response, f"/accounts/login/?next=/test/{progress}/")
+
+    def test_404_with_invalid_progress(self):
+        self.client.login(username="testuser1", password="123")
+        response = self.client.get(
+            reverse("htest-question", kwargs={"progress_id": uuid.uuid4()})
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_404_with_wrong_user(self):
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        self.client.login(username="testuser2", password="456")
+        response = self.client.get(
+            reverse("htest-question", kwargs={"progress_id": progress.id})
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_400_with_already_finished_progress(self):
+        progress = HtestProgress.objects.get(
+            question_in_progress=None, user__username="testuser2"
+        )
+        self.client.login(username="testuser2", password="456")
+        response = self.client.get(
+            reverse("htest-question", kwargs={"progress_id": progress.id})
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_right_user_loads_correctly(self):
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        self.client.login(username="testuser1", password="123")
         response = self.client.get(
             reverse("htest-question", kwargs={"progress_id": progress.id})
         )
@@ -339,11 +424,11 @@ class HtestQuestionViewTest(test.TestCase):
         self.assertDictEqual(response.context["form"].initial, {})
 
     def test_previously_selected_answer_is_on_form(self):
-        question = Question.objects.get(text="Test question 1?")
-        progress = HtestProgress.objects.create(question_in_progress=question)
-        initial_answer = question.answers.get(text="Bad answer")
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        initial_answer = progress.question_in_progress.answers.get(text="Bad answer")
         progress.selected_answers.set([initial_answer])
 
+        self.client.login(username="testuser1", password="123")
         response = self.client.get(
             reverse("htest-question", kwargs={"progress_id": progress.id})
         )
@@ -351,31 +436,35 @@ class HtestQuestionViewTest(test.TestCase):
             response.context["form"].initial["selected_answer"], initial_answer
         )
 
-    def test_404_with_invalid_progress(self):
-        response = self.client.get(
-            reverse("htest-question", kwargs={"progress_id": uuid.uuid4()})
+    def test_post_renders_on_invalid_form(self):
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        self.client.login(username="testuser1", password="123")
+        response = self.client.post(
+            reverse("htest-question", kwargs={"progress_id": progress.id})
         )
-        self.assertEqual(response.status_code, 404)
 
-    def test_400_with_already_finished_progress(self):
-        finished_progress = HtestProgress.objects.create(question_in_progress=None)
-        response = self.client.get(
-            reverse("htest-question", kwargs={"progress_id": finished_progress.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(
+            response.context["form"].errors,
+            {"selected_answer": ["This field is required."]},
         )
-        self.assertEqual(response.status_code, 400)
 
     def test_post_redirects_next_correctly(self):
-        current_question = Question.objects.get(text="Test question 1?")
-        progress = HtestProgress.objects.create(question_in_progress=current_question)
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        self.client.login(username="testuser1", password="123")
         response = self.client.post(
             reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
-                "selected_answer": current_question.answers.get(text="Bad answer").id,
+                "selected_answer": progress.question_in_progress.answers.get(
+                    text="Bad answer"
+                ).id,
                 "submit-next": [""],  # from self.request.POST
             },
         )
 
-        progress = HtestProgress.objects.get()  # get updated progress instance
+        progress = HtestProgress.objects.get(  # must get updated progress instance
+            id=progress.id
+        )
         next_question = Question.objects.get(text="Test question 2?")
         self.assertEqual(progress.question_in_progress, next_question)
         self.assertRedirects(
@@ -385,7 +474,10 @@ class HtestQuestionViewTest(test.TestCase):
 
     def test_post_redirects_previous_correctly(self):
         current_question = Question.objects.get(text="Test question 2?")
-        progress = HtestProgress.objects.create(question_in_progress=current_question)
+        progress = HtestProgress.objects.get(
+            question_in_progress=current_question, user__username="testuser2"
+        )
+        self.client.login(username="testuser2", password="456")
         response = self.client.post(
             reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
@@ -394,7 +486,7 @@ class HtestQuestionViewTest(test.TestCase):
             },
         )
 
-        progress = HtestProgress.objects.get()  # get updated progress instance
+        progress = HtestProgress.objects.get(id=progress.id)
         previous_question = Question.objects.get(text="Test question 1?")
         self.assertEqual(progress.question_in_progress, previous_question)
         self.assertRedirects(
@@ -403,20 +495,24 @@ class HtestQuestionViewTest(test.TestCase):
         )
 
     def test_post_400_on_missing_submit_action(self):
-        current_question = Question.objects.get(text="Test question 1?")
-        progress = HtestProgress.objects.create(question_in_progress=current_question)
+        progress = HtestProgress.objects.get(user__username="testuser1")
+        self.client.login(username="testuser1", password="123")
         response = self.client.post(
             reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
-                "selected_answer": current_question.answers.get(text="Bad answer").id,
+                "selected_answer": progress.question_in_progress.answers.get(
+                    text="Bad answer"
+                ).id,
             },
         )
         self.assertEqual(response.status_code, 400)
 
     def test_post_finishes_correctly(self):
-        # New progress because the view will change it
         current_question = Question.objects.get(text="Test question 2?")
-        progress = HtestProgress.objects.create(question_in_progress=current_question)
+        progress = HtestProgress.objects.get(
+            question_in_progress=current_question, user__username="testuser2"
+        )
+        self.client.login(username="testuser2", password="456")
         response = self.client.post(
             reverse("htest-question", kwargs={"progress_id": progress.id}),
             {
@@ -432,6 +528,11 @@ class HtestQuestionViewTest(test.TestCase):
 class HtestResultViewTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+
         question = Question.objects.create(text="Test question")
         bad_answer = Answer.objects.create(
             text="Bad test answer", question=question, risk_score=100
@@ -439,8 +540,13 @@ class HtestResultViewTest(test.TestCase):
         good_answer = Answer.objects.create(
             text="Good test answer", question=question, risk_score=0
         )
-        bad_progress = HtestProgress.objects.create(question_in_progress=None)
-        good_progress = HtestProgress.objects.create(question_in_progress=None)
+
+        bad_progress = HtestProgress.objects.create(
+            question_in_progress=None, user=test_user1
+        )
+        good_progress = HtestProgress.objects.create(
+            question_in_progress=None, user=test_user1
+        )
         bad_progress.selected_answers.add(bad_answer)
         good_progress.selected_answers.add(good_answer)
 

@@ -1,8 +1,12 @@
 from django import test
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
 from hyiptest.models import Answer, BadDomain, BadSite, HtestProgress, Question
+
+
+user_model = get_user_model()
 
 
 # See QuestionModelTest for a more verbose example for a model test class
@@ -179,6 +183,11 @@ class AnswerModelTest(test.TestCase):
 class HtestProgressModelTest(test.TestCase):
     @classmethod
     def setUpTestData(cls):
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+
         question1 = Question.objects.create(text="Test Question 1")
         question2 = Question.objects.create(text="Test Question 2")
         answer_q1 = Answer.objects.create(
@@ -187,7 +196,10 @@ class HtestProgressModelTest(test.TestCase):
         answer_q2 = Answer.objects.create(
             text="Answer q2", risk_score=66, question=question2
         )
-        progress = HtestProgress.objects.create(question_in_progress=None)
+
+        progress = HtestProgress.objects.create(
+            question_in_progress=None, user=test_user1
+        )
         progress.selected_answers.set([answer_q1, answer_q2])
 
     def test_get_total_risk_score(self):
