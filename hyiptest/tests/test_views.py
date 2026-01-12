@@ -14,11 +14,8 @@ user_model = get_user_model()
 
 
 class HomePageViewTest(test.TestCase):
-    def setUp(self):
-        self.url = reverse("home")
-
     def test_loads_correctly(self):
-        response = self.client.get(self.url)
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.request["PATH_INFO"], "/")
         self.assertTemplateUsed(response, "home.html")
@@ -64,14 +61,11 @@ class BadSiteDetailViewTest(test.TestCase):
     def setUpTestData(cls):
         BadSite.objects.create(name="Test Zero", bad_type="Unittest")
 
-    def setUp(self):
-        self.badsite = BadSite.objects.get()
-        self.url = self.badsite.get_absolute_url()
-
     def test_loads_correctly(self):
-        response = self.client.get(self.url)
+        badsite = BadSite.objects.get()
+        response = self.client.get(badsite.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.request["PATH_INFO"], f"/badsites/{self.badsite.pk}/")
+        self.assertEqual(response.request["PATH_INFO"], f"/badsites/{badsite.pk}/")
         self.assertTemplateUsed(response, "hyiptest/badsite_detail.html")
 
 
@@ -85,7 +79,6 @@ class SearchDomainViewTest(test.TestCase):
         BadDomain.objects.create(name="test-zero.com", site=badsite)
 
     def setUp(self):
-        self.badsite = BadSite.objects.get()
         self.url = reverse("search-domain")
 
     def test_loads_correctly(self):
@@ -154,16 +147,11 @@ class QuestionDetailViewTest(test.TestCase):
             description="Question for the test.",
         )
 
-    def setUp(self):
-        self.question = Question.objects.get()
-        self.url = self.question.get_absolute_url()
-
     def test_loads_correctly(self):
-        response = self.client.get(self.url)
+        question = Question.objects.get()
+        response = self.client.get(question.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.request["PATH_INFO"], f"/questions/{self.question.pk}/"
-        )
+        self.assertEqual(response.request["PATH_INFO"], f"/questions/{question.pk}/")
         self.assertTemplateUsed(response, "hyiptest/question_detail.html")
 
 
@@ -256,20 +244,37 @@ class HtestProgressListViewTest(test.TestCase):
             username="testuser1", password="123"
         )
         test_user1.save()
+        test_user2 = user_model.objects.create_user(
+            username="testuser2", password="456"
+        )
+        test_user2.save()
 
         for _unused in range(22):
             HtestProgress.objects.create(question_in_progress=None, user=test_user1)
 
     def setUp(self):
         self.url = reverse("htestprogress-list")
+        self.correct_url = "/saved-tests/"
+
+    def test_redirects_if_not_logged_in(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, "/accounts/login/?next=" + self.correct_url)
 
     def test_loads_correctly(self):
+        self.client.login(username="testuser1", password="123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.request["PATH_INFO"], "/saved-tests/")
+        self.assertEqual(response.request["PATH_INFO"], self.correct_url)
         self.assertTemplateUsed(response, "hyiptest/htestprogress_list.html")
 
+    def test_no_result_on_wrong_user(self):
+        self.client.login(username="testuser2", password="456")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["htestprogress_list"]), 0)
+
     def test_correct_pagination_first_page(self):
+        self.client.login(username="testuser1", password="123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTrue("is_paginated" in response.context)
@@ -277,6 +282,7 @@ class HtestProgressListViewTest(test.TestCase):
         self.assertEqual(len(response.context["htestprogress_list"]), 20)
 
     def test_correct_pagination_last_page(self):
+        self.client.login(username="testuser1", password="123")
         response = self.client.get(self.url + "?page=2")
         self.assertEqual(response.status_code, 200)
         self.assertTrue("is_paginated" in response.context)
@@ -291,6 +297,10 @@ class HtestProgressDetailViewTest(test.TestCase):
             username="testuser1", password="123"
         )
         test_user1.save()
+        test_user2 = user_model.objects.create_user(
+            username="testuser2", password="456"
+        )
+        test_user2.save()
 
         question = Question.objects.create(text="Test question")
         Answer.objects.create(text="Test answer", question=question, risk_score=69)
@@ -302,15 +312,21 @@ class HtestProgressDetailViewTest(test.TestCase):
 
     def setUp(self):
         self.progress = HtestProgress.objects.get()
-        self.url = self.progress.get_absolute_url()
+        self.progress_url = self.progress.get_absolute_url()
 
     def test_loads_correctly(self):
-        response = self.client.get(self.url)
+        self.client.login(username="testuser1", password="123")
+        response = self.client.get(self.progress_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.request["PATH_INFO"], f"/saved-tests/{self.progress.pk}/"
         )
         self.assertTemplateUsed(response, "hyiptest/htestprogress_detail.html")
+
+    def test_404_on_wrong_user(self):
+        self.client.login(username="testuser2", password="456")
+        response = self.client.get(self.progress_url)
+        self.assertEqual(response.status_code, 404)
 
 
 # Htest
@@ -329,13 +345,16 @@ class HtestStartViewTest(test.TestCase):
         test_user = user_model.objects.create_user(username="testuser", password="123")
         test_user.save()
 
+    def setUp(self):
+        self.url = reverse("htest-start")
+
     def test_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get(reverse("htest-start"))
+        response = self.client.get(self.url)
         self.assertRedirects(response, "/accounts/login/?next=/test/")
 
     def test_redirects_to_test_if_logged_in(self):
         self.client.login(username="testuser", password="123")
-        response = self.client.get(reverse("htest-start"))
+        response = self.client.get(self.url)
 
         self.assertEqual(HtestProgress.objects.count(), 1)  # ensure only 1 was created
         progress = HtestProgress.objects.get()

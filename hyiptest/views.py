@@ -100,13 +100,29 @@ class QuestionDeleteView(generic.DeleteView):
 # HtestProgress
 
 
-class HtestProgressListView(generic.ListView):
+class HtestProgressListView(LoginRequiredMixin, generic.ListView):
+    """
+    View displaying completed and incomplete tests started by a user.
+    """
+
     model = HtestProgress
     paginate_by = 20
 
+    def get_queryset(self):
+        return HtestProgress.objects.filter(user=self.request.user)
 
-class HtestProgressDetailView(generic.DetailView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        return context
+
+
+class HtestProgressDetailView(LoginRequiredMixin, generic.DetailView):
     model = HtestProgress
+
+    # Search by pk will be performed on this queryset, 404 if missing
+    def get_queryset(self):
+        return HtestProgress.objects.filter(user=self.request.user)
 
 
 # HyipTest (Htest)
