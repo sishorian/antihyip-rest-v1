@@ -74,6 +74,11 @@ urlpatterns += [
         views.HtestProgressDetailView.as_view(),
         name="htestprogress-detail",
     ),
+    path(
+        "saved-tests/<uuid:pk>/delete/",
+        views.HtestProgressDeleteView.as_view(),
+        name="htestprogress-delete",
+    ),
 ]
 
 # The test

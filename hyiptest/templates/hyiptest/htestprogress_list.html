@@ -9,8 +9,6 @@
 
   <p>
     Click on an <em>ID</em> to view the details.
-    <br>
-    Click on a <em>Total Risk Score</em> to resume the test or view its result.
   </p>
 
   <table class="table">
@@ -21,6 +19,7 @@
         <th>Total Risk Score</th>
         <th>Started</th>
         <th>Completed / Last Active</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -38,18 +37,32 @@
           </td>
           <td>
             {% if htestprogress.question_in_progress %}
-              <a href="{% url 'htest-question' htestprogress.id %}">N/A</a>
+              N/A
             {% else %}
-              <a href="{% url 'htest-result' htestprogress.id %}">{{ htestprogress.get_total_risk_score }}</a>
+              {{ htestprogress.get_total_risk_score }}
             {% endif %}
           </td>
           <td>{{ htestprogress.created_at }}</td>
           <td>{{ htestprogress.updated_at }}</td>
+          <td>
+            {% if htestprogress.question_in_progress %}
+              <a href="{% url 'htest-question' htestprogress.id %}"
+                 class="btn btn-success">Resume</a>
+            {% else %}
+              <a href="{% url 'htest-result' htestprogress.id %}"
+                 class="btn btn-success">Result</a>
+            {% endif %}
+            <a href="{% url 'htestprogress-delete' htestprogress.id %}"
+               class="btn btn-danger">Delete</a>
+          </td>
         </tr>
       {% empty %}
         <tr>
           <td>
             <strong>None found</strong>
+          </td>
+          <td>
+            <strong>-</strong>
           </td>
           <td>
             <strong>-</strong>

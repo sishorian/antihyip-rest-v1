@@ -403,6 +403,53 @@ class HtestProgressDetailViewTest(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class HtestProgressDeleteViewTest(test.TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        test_user1 = user_model.objects.create_user(
+            username="testuser1", password="123"
+        )
+        test_user1.save()
+        test_user2 = user_model.objects.create_user(
+            username="testuser2", password="456"
+        )
+        test_user2.save()
+
+        question = Question.objects.create(text="Test question")
+        Answer.objects.create(text="Test answer", question=question, risk_score=69)
+
+        progress = HtestProgress.objects.create(
+            question_in_progress=None, user=test_user1
+        )
+        progress.selected_answers.add(question.answers.get())
+
+    def setUp(self):
+        self.progress = HtestProgress.objects.get()
+        self.url = reverse("htestprogress-delete", kwargs={"pk": self.progress.pk})
+        self.correct_url = f"/saved-tests/{self.progress.pk}/delete/"
+
+    def test_redirect_on_no_user(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, "/accounts/login/?next=" + self.correct_url)
+
+    def test_404_on_wrong_user(self):
+        self.client.login(username="testuser2", password="456")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_loads_correctly(self):
+        self.client.login(username="testuser1", password="123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.request["PATH_INFO"], self.correct_url)
+        self.assertTemplateUsed(response, "hyiptest/htestprogress_confirm_delete.html")
+
+    def test_post_redirect_on_success(self):
+        self.client.login(username="testuser1", password="123")
+        response = self.client.post(self.url)
+        self.assertRedirects(response, reverse("htestprogress-list"))
+
+
 # Htest
 
 

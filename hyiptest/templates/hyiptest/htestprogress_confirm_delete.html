@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Delete Question: {{ question.pk }}</h1>
+  <h1>Delete Test Progress</h1>
 
   <p>
-    <strong>Text:</strong> {{ question.text }}
+    <strong>ID:</strong> {{ htestprogress.id }}
   </p>
 
-  <p>Are you sure you want to delete the question?</p>
+  <p>Are you sure you want to delete the test progress?</p>
 
   <form method="post">
     {% csrf_token %}

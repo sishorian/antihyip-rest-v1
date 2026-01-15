@@ -132,6 +132,17 @@ class HtestProgressDetailView(LoginRequiredMixin, generic.DetailView):
         return HtestProgress.objects.filter(user=self.request.user)
 
 
+class HtestProgressDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = HtestProgress
+    success_url = reverse_lazy("htestprogress-list")
+
+    def get_queryset(self):
+        """
+        Only allow to delete user's progresses.
+        """
+        return HtestProgress.objects.filter(user=self.request.user)
+
+
 # HyipTest (Htest)
 # Just `test_` can be confused with unittest
 

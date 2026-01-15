@@ -11,7 +11,6 @@
     <strong>Status:</strong>
     {% if htestprogress.question_in_progress %}
       Abandoned
-      (<a href="{% url 'htest-question' htestprogress.id %}">Resume test</a>)
     {% else %}
       Completed
     {% endif %}
@@ -41,5 +40,18 @@
 
   <p>
     <strong>Updated at:</strong> {{ htestprogress.updated_at }}
+  </p>
+
+  <p>
+    <strong>Actions:</strong>
+    {% if htestprogress.question_in_progress %}
+      <a href="{% url 'htest-question' htestprogress.id %}"
+         class="btn btn-success">Resume</a>
+    {% else %}
+      <a href="{% url 'htest-result' htestprogress.id %}"
+         class="btn btn-success">View Result</a>
+    {% endif %}
+    <a href="{% url 'htestprogress-delete' htestprogress.id %}"
+       class="btn btn-danger">Delete</a>
   </p>
 {% endblock %}
