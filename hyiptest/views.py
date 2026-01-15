@@ -123,8 +123,12 @@ class HtestProgressListView(LoginRequiredMixin, generic.ListView):
 class HtestProgressDetailView(LoginRequiredMixin, generic.DetailView):
     model = HtestProgress
 
-    # Search by pk will be performed on this queryset, 404 if missing
     def get_queryset(self):
+        """
+        Only lookup among user's progresses.
+
+        Search by pk will be performed on this queryset, 404 if missing.
+        """
         return HtestProgress.objects.filter(user=self.request.user)
 
 
@@ -262,20 +266,21 @@ class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
         raise BadRequest("Form submitted but neither action was triggered")
 
 
-# Is LoginRequiredMixin needed here?
-class HtestResultView(generic.TemplateView):
+class HtestResultView(LoginRequiredMixin, generic.TemplateView):
     template_name = "hyiptest/htest_result.html"
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super().get_context_data(**kwargs)
-
         def result_is_bad(result):
             return result >= 100
 
-        context["result_is_bad"] = result_is_bad(
-            get_object_or_404(
-                HtestProgress, id=kwargs["progress_id"]
-            ).get_total_risk_score()
-        )
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+
+        progress = get_object_or_404(HtestProgress, id=kwargs["progress_id"])
+        if progress.user != self.request.user:
+            raise Http404("Attempt to view result of someone else's test")
+        if progress.question_in_progress is not None:
+            raise BadRequest("Attempt to view result of unfinished test")
+
+        context["result_is_bad"] = result_is_bad(progress.get_total_risk_score())
         return context
