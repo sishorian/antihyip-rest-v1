@@ -293,5 +293,5 @@ class HtestResultView(LoginRequiredMixin, generic.TemplateView):
         if progress.question_in_progress is not None:
             raise BadRequest("Attempt to view result of unfinished test")
 
-        context["result_is_bad"] = result_is_bad(progress.get_total_risk_score())
+        context["result_is_bad"] = result_is_bad(progress.total_risk_score)
         return context

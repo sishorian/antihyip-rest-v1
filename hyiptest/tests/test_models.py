@@ -202,9 +202,9 @@ class HtestProgressModelTest(test.TestCase):
         )
         progress.selected_answers.set([answer_q1, answer_q2])
 
-    def test_get_total_risk_score(self):
+    def test_total_risk_score(self):
         """
-        Ensure get_total_risk_score() method works correctly.
+        Ensure total_risk_score property works correctly.
         """
         progress = HtestProgress.objects.get()
-        self.assertEqual(progress.get_total_risk_score(), 99)
+        self.assertEqual(progress.total_risk_score, 99)

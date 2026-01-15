@@ -212,11 +212,11 @@ class HtestProgress(UUIDTimestampsModel):
         help_text=_("User that started the test"),
     )
 
+    @property
     @admin.display(description=_("Total Risk Score"))
-    def get_total_risk_score(self):
-        return self.selected_answers.aggregate(total_risk_score=Sum("risk_score"))[
-            "total_risk_score"
-        ]
+    def total_risk_score(self):
+        aggregate_dict = self.selected_answers.aggregate(Sum("risk_score"))
+        return aggregate_dict["risk_score__sum"]
 
     def get_absolute_url(self):
         return reverse("htestprogress-detail", kwargs={"pk": self.pk})

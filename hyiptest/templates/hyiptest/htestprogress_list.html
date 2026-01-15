@@ -39,7 +39,7 @@
             {% if htestprogress.question_in_progress %}
               N/A
             {% else %}
-              {{ htestprogress.get_total_risk_score }}
+              {{ htestprogress.total_risk_score }}
             {% endif %}
           </td>
           <td>{{ htestprogress.created_at }}</td>
