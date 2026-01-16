@@ -45,13 +45,13 @@
   <p>
     <strong>Actions:</strong>
     {% if htestprogress.question_in_progress %}
-      <a href="{% url 'htest-question' htestprogress.id %}"
+      <a href="{% url 'htest-question' htestprogress.pk %}"
          class="btn btn-success">Resume</a>
     {% else %}
-      <a href="{% url 'htest-result' htestprogress.id %}"
+      <a href="{% url 'htest-result' htestprogress.pk %}"
          class="btn btn-success">View Result</a>
     {% endif %}
-    <a href="{% url 'htestprogress-delete' htestprogress.id %}"
+    <a href="{% url 'htestprogress-delete' htestprogress.pk %}"
        class="btn btn-danger">Delete</a>
   </p>
 {% endblock %}

@@ -158,7 +158,7 @@ def htest_start(request):
     )
     logger.debug("Created HtestProgress instance: %s", progress)
 
-    return redirect("htest-question", progress_id=progress.id)
+    return redirect("htest-question", progress_pk=progress.pk)
 
 
 class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
@@ -171,11 +171,11 @@ class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
 
     template_name = "hyiptest/htest_question.html"
 
-    def get_test_progress(self, progress_id):
+    def get_test_progress(self, progress_pk):
         """
         Return HtestProgress instance of the test.
         """
-        progress = get_object_or_404(HtestProgress, id=progress_id)
+        progress = get_object_or_404(HtestProgress, pk=progress_pk)
 
         if progress.user != self.request.user:
             raise Http404("Attempt to continue someone else's test")
@@ -233,14 +233,14 @@ class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        progress = self.get_test_progress(kwargs["progress_id"])
+        progress = self.get_test_progress(kwargs["progress_pk"])
         context = self.get_context_data(
             progress, self.get_test_form(progress), **kwargs
         )
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        progress = self.get_test_progress(kwargs["progress_id"])
+        progress = self.get_test_progress(kwargs["progress_pk"])
         form = self.get_test_form(progress, request.POST)
         context = self.get_context_data(progress, form, **kwargs)
 
@@ -263,16 +263,16 @@ class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
         if "submit-previous" in request.POST:
             progress.question_in_progress = previous_question
             progress.save()
-            return redirect("htest-question", progress_id=progress.id)
+            return redirect("htest-question", progress_pk=progress.pk)
         next_question = context["next_question"]
         if "submit-next" in request.POST and next_question is None:
             progress.question_in_progress = None
             progress.save()
-            return redirect("htest-result", progress_id=progress.id)
+            return redirect("htest-result", progress_pk=progress.pk)
         if "submit-next" in request.POST:
             progress.question_in_progress = next_question
             progress.save()
-            return redirect("htest-question", progress_id=progress.id)
+            return redirect("htest-question", progress_pk=progress.pk)
 
         raise BadRequest("Form submitted but neither action was triggered")
 
@@ -287,7 +287,7 @@ class HtestResultView(LoginRequiredMixin, generic.TemplateView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
 
-        progress = get_object_or_404(HtestProgress, id=kwargs["progress_id"])
+        progress = get_object_or_404(HtestProgress, pk=kwargs["progress_pk"])
         if progress.user != self.request.user:
             raise Http404("Attempt to view result of someone else's test")
         if progress.question_in_progress is not None:

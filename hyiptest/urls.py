@@ -89,12 +89,12 @@ urlpatterns += [
         name="htest-start",
     ),
     path(
-        "test/<uuid:progress_id>/",
+        "test/<uuid:progress_pk>/",
         views.HtestQuestionView.as_view(),
         name="htest-question",
     ),
     path(
-        "test/<uuid:progress_id>/result/",
+        "test/<uuid:progress_pk>/result/",
         views.HtestResultView.as_view(),
         name="htest-result",
     ),
