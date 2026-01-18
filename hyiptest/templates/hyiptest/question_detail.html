@@ -1,62 +1,64 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Question Details</h1>
+  <h1 class="mt-2">{% translate "Question Details" %}</h1>
 
-  <p>
-    <strong>Text:</strong> {{ question.text }}
+  <p class="mt-3">
+    <strong>{% translate "Text" %}:</strong> {{ question.text }}
   </p>
 
-  <p>
-    <strong>Description:</strong>
+  <p class="mt-3">
+    <strong>{% translate "Description" %}:</strong>
     {% if question.description %}
       {{ question.description }}
     {% else %}
-      <strong>None</strong>
+      <strong>{% translate "None" %}</strong>
     {% endif %}
   </p>
 
-  <p>
+  <p class="mt-3">
     <strong>ID:</strong> {{ question.id }}
   </p>
 
-  <p>
-    <strong>Created at:</strong> {{ question.created_at }}
+  <p class="mt-3">
+    <strong>{% translate "Created at" %}:</strong> {{ question.created_at }}
   </p>
 
-  <p>
-    <strong>Updated at:</strong> {{ question.updated_at }}
+  <p class="mt-3">
+    <strong>{% translate "Updated at" %}:</strong> {{ question.updated_at }}
   </p>
 
-  <div class="ms-4 mt-4">
-    <h4>Answers</h4>
+  <div class="ms-6 mt-6">
+    <h4>{% translate "Answers" %}</h4>
     <hr />
 
-    {% if question.answers.all %}
-      <table class="table">
-        <thead>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{% translate "Text" %}</th>
+          <th>{% translate "Risk Score" %}</th>
+          <th>{% translate "Description" %}</th>
+          <th>{% translate "Last updated" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for answer in question.answers.all %}
           <tr>
-            <th>Text</th>
-            <th>Risk Score</th>
-            <th>Description</th>
-            <th>Last updated</th>
+            <td>{{ answer.text }}</td>
+            <td>{{ answer.risk_score }}</td>
+            <td>{{ answer.description }}</td>
+            <td>{{ answer.updated_at }}</td>
           </tr>
-        </thead>
-        <tbody>
-          {% for answer in question.answers.all %}
-            <tr>
-              <td>{{ answer.text }}</td>
-              <td>{{ answer.risk_score }}</td>
-              <td>{{ answer.description }}</td>
-              <td>{{ answer.updated_at }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>
-        <strong>None</strong>
-      </p>
-    {% endif %}
+        {% empty %}
+          <tr>
+            <td>{% translate "None" %}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}

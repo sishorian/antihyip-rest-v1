@@ -1,29 +1,30 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Search website in the fraud database</h1>
+  <h1 class="mt-2">{% translate "Search website in the fraud database" %}</h1>
 
-  <form>
+  <form class="mt-3">
     {{ form.as_div }}
     {% comment "Disable form classes for now" %}
       <button type="submit" class="btn btn-primary">Search</button>
     {% endcomment %}
-    <button type="submit">Search</button>
+    <button type="submit">{% translate "Search" %}</button>
   </form>
 
   {% if executed_query %}
     <hr />
-    <p>
-      <strong>Your search:</strong> {{ executed_query }}
+    <p class="mt-3">
+      <strong>{% translate "Your search" %}:</strong> {{ executed_query }}
     </p>
 
     {% if found_badsite %}
       <table class="table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Domains</th>
+            <th>{% translate "Name" %}</th>
+            <th>{% translate "Type" %}</th>
+            <th>{% translate "Domains" %}</th>
           </tr>
         </thead>
         <tbody>
@@ -37,7 +38,9 @@
         </tbody>
       </table>
     {% else %}
-      <p>No websites with this domain found in the fraud database</p>
+      <p class="mt-3">
+        {% translate "No websites with this domain found in the fraud database" %}
+      </p>
     {% endif %}
   {% endif %}
 {% endblock %}

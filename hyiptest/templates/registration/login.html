@@ -1,19 +1,22 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  {% if form.errors %}<p>Wrong username or password</p>{% endif %}
-
   {% if next %}
     {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page</p>
+      <p class="mt-3 text-warning-emphasis">
+        {% translate "Your account doesn't have access to this page" %}
+      </p>
     {% else %}
-      <p>Please login to see this page</p>
+      <p class="mt-3 text-warning-emphasis">
+        {% translate "Please log in to see this page" %}
+      </p>
     {% endif %}
   {% endif %}
 
-  <form method="post" action="{% url 'login' %}">
+  <form method="post" action="{% url 'login' %}" class="mt-3">
     {% csrf_token %}
-    <table>
+    <table class="table">
       <tr>
         <td>{{ form.username.label_tag }}</td>
         <td>{{ form.username }}</td>
@@ -24,7 +27,11 @@
       </tr>
     </table>
 
-    <button type="submit">Login</button>
+    {% if form.errors %}
+      <p class="mt-3 text-danger">Wrong username or password</p>
+    {% endif %}
+
+    <button type="submit">{% translate "Log in" %}</button>
 
     <input type="hidden" name="next" value="{{ next }}">
   </form>

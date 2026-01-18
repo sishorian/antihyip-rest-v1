@@ -15,5 +15,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 .env
+# Compiled messages
+*.mo
 # Ignore migrations until deployment.
 **/migrations/[0-9]*

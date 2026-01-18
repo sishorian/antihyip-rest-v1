@@ -1,17 +1,26 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
   {% if result_is_bad %}
     {# Page for the "bad" result #}
-    <h1>The site looks like a pyramid.</h1>
+    <h1 class="mt-2">{% translate "The site looks like a pyramid" %}</h1>
 
-    <p>Please stay away from it.</p>
+    <p class="mt-3">
+      {% blocktranslate trimmed %}
+        Please stay away from it.
+      {% endblocktranslate %}
+    </p>
 
   {% else %}
     {# Page for the "good" result #}
-    <h1>The site is probably not a pyramid.</h1>
+    <h1 class="mt-2">{% translate "The site is probably not a pyramid" %}</h1>
 
-    <p>This doesn't guarantee the site you are checking is totally legit.</p>
+    <p class="mt-3">
+      {% blocktranslate trimmed %}
+        This doesn't guarantee the site you are checking is totally legit.
+      {% endblocktranslate %}
+    </p>
 
   {% endif %}
 {% endblock %}

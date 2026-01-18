@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Welcome to the project AntiHyip!</h1>
+  <h1 class="mt-2">{% translate "Welcome to the project AntiHyip!" %}</h1>
 
-  <p class="lead">
-    It helps you check if a specific website is an investment scam, HYIP-pyramid, etc.
+  <p class="mt-3 lead">
+    {% blocktranslate trimmed %}
+      It helps you check if a specific website is an investment scam, HYIP-pyramid, etc.
+    {% endblocktranslate %}
   </p>
 {% endblock %}

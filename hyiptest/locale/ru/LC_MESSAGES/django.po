@@ -1,0 +1,388 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-18 18:53+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: forms.py:10
+#, python-format
+msgid "%(value)s is not a lowercase string"
+msgstr "Строка %(value)s не в нижнем регистре"
+
+#: forms.py:25 models.py:98
+msgid "Enter a valid domain name"
+msgstr "Введите валидное доменное имя"
+
+#: forms.py:28
+msgid "Domain name"
+msgstr "Доменное имя"
+
+#: models.py:26
+msgid "Unique identifier"
+msgstr "Уникальный идентификатор"
+
+#: models.py:29
+msgid "Creation time"
+msgstr "Время создания"
+
+#: models.py:30
+msgid "Modification time"
+msgstr "Время изменения"
+
+#: models.py:48
+msgid "Name of the site or its company behind it"
+msgstr "Имя сайта или компании, которую сайт представляет"
+
+#: models.py:56
+msgid "What type of fraud it is, e.g. pyramid, scam, etc."
+msgstr "Тип мошенничества, например, пирамида, скам и т.д."
+
+#: models.py:85
+msgid "BadSite already exists (lowercase match)"
+msgstr "Такой BadSite уже существует (совпадение по нижнему регистру)"
+
+#: models.py:99
+msgid "Domain name of the BadSite"
+msgstr "Доменное имя BadSite"
+
+#: models.py:106
+msgid "Name of the site this domain belongs to"
+msgstr "Имя сайта, к которому данный домен принадлежит"
+
+#: models.py:135
+msgid "The question itself"
+msgstr "Сам вопрос"
+
+#: models.py:140
+msgid "Explain the question to the user"
+msgstr "Объяснение вопроса пользователю"
+
+#: models.py:155
+msgid "Question already exists (lowercase match)"
+msgstr "Такой Question уже существует (совпадение по нижнему регистру)"
+
+#: models.py:166
+msgid "The answer itself"
+msgstr "Сам ответ"
+
+#: models.py:170
+msgid "What it means, in more words"
+msgstr "Что это означает, более подробно"
+
+#: models.py:177
+msgid "The question it belongs to"
+msgstr "Вопрос, к которому принадлежит"
+
+#: models.py:180
+msgid "Bad points for a site"
+msgstr "Плохие очки для сайта"
+
+#: models.py:203
+msgid "Question currently displayed to the user, null if test is completed"
+msgstr "Вопрос, на котором остановился пользователь, null, если тест завершен"
+
+#: models.py:207
+msgid "Answers the user has selected"
+msgstr "Ответы, которые выбрал пользователь"
+
+#: models.py:212
+msgid "User that started the test"
+msgstr "Пользователь, начавший тест"
+
+#: models.py:216 templates/hyiptest/htestprogress_detail.html:31
+#: templates/hyiptest/htestprogress_list.html:22
+msgid "Total Risk Score"
+msgstr "Всего Очков Риска"
+
+#: templates/base.html:8
+msgid "HYIP, pyramid, test, fraud"
+msgstr "HYIP, пирамида, тест, мошенники"
+
+#: templates/base.html:11
+msgid "Check if a site is an investment fraud."
+msgstr "Проверить сайт на предмет мошенничества."
+
+#: templates/base.html:59 templates/hyiptest/search_domain.html:5
+msgid "Search website in the fraud database"
+msgstr "Поиск сайта по базе мошенников"
+
+#: templates/base.html:63
+msgid "Test"
+msgstr "Тест"
+
+#: templates/base.html:70
+msgid "Previous tests"
+msgstr "Предидушие попытки теста"
+
+#: templates/base.html:74
+msgid "List of all questions"
+msgstr "Список вопросов"
+
+#: templates/base.html:78
+msgid "Database of bad sites"
+msgstr "База мошеннических сайтов"
+
+#: templates/base.html:94
+msgid "Log out"
+msgstr "Выйти"
+
+#: templates/base.html:101 templates/registration/login.html:34
+msgid "Log in"
+msgstr "Войти"
+
+#: templates/base.html:117 templates/hyiptest/htest_question.html:16
+msgid "Previous"
+msgstr "Назад"
+
+#: templates/base.html:121
+#, python-format
+msgid "Page %(page_obj.number)s of %(page_obj.paginator.num_pages)s"
+msgstr "Страница %(page_obj.number)s из %(page_obj.paginator.num_pages)s"
+
+#: templates/base.html:127 templates/hyiptest/htest_question.html:22
+msgid "Next"
+msgstr "Далее"
+
+#: templates/home.html:5
+msgid "Welcome to the project AntiHyip!"
+msgstr "Добро пожаловать в проект AntiHyip!"
+
+#: templates/home.html:8
+msgid ""
+"It helps you check if a specific website is an investment scam, HYIP-"
+"pyramid, etc."
+msgstr ""
+"Он поможет вам проверить, является ли сайт инвестиционным мошенничеством "
+"HYIP-пирамидой и т.д."
+
+#: templates/hyiptest/badsite_detail.html:8
+msgid "Bad type"
+msgstr "Тип мошенничества"
+
+#: templates/hyiptest/badsite_detail.html:16
+#: templates/hyiptest/htestprogress_detail.html:39
+#: templates/hyiptest/question_detail.html:25
+msgid "Created at"
+msgstr "Создано"
+
+#: templates/hyiptest/badsite_detail.html:20
+#: templates/hyiptest/htestprogress_detail.html:43
+#: templates/hyiptest/question_detail.html:29
+msgid "Updated at"
+msgstr "Изменено"
+
+#: templates/hyiptest/badsite_detail.html:24
+#: templates/hyiptest/badsite_list.html:18
+#: templates/hyiptest/search_domain.html:27
+msgid "Domains"
+msgstr "Домены"
+
+#: templates/hyiptest/badsite_detail.html:31
+#: templates/hyiptest/htestprogress_detail.html:26
+#: templates/hyiptest/question_detail.html:16
+#: templates/hyiptest/question_detail.html:55
+msgid "None"
+msgstr "Пусто"
+
+#: templates/hyiptest/badsite_list.html:5
+msgid "List of bad sites"
+msgstr "Список мошеннических сайтов"
+
+#: templates/hyiptest/badsite_list.html:8
+msgid "Click on a <em>Name</em> to view the details"
+msgstr "Нажмите на <em>Имя</em>, чтобы посмотреть детали"
+
+#: templates/hyiptest/badsite_list.html:16
+#: templates/hyiptest/search_domain.html:25
+msgid "Name"
+msgstr "Имя"
+
+#: templates/hyiptest/badsite_list.html:17
+#: templates/hyiptest/search_domain.html:26
+msgid "Type"
+msgstr "Тип"
+
+#: templates/hyiptest/badsite_list.html:33
+msgid "Empty"
+msgstr "Пусто"
+
+#: templates/hyiptest/htest_question.html:6
+msgid "Test: Question"
+msgstr "Тест: Вопрос"
+
+#: templates/hyiptest/htest_question.html:20
+msgid "Finish Test"
+msgstr "Закончить тест"
+
+#: templates/hyiptest/htest_result.html:7
+msgid "The site looks like a pyramid"
+msgstr "Сайт имеет признаки мошенничества"
+
+#: templates/hyiptest/htest_result.html:10
+msgid "Please stay away from it."
+msgstr "Вкладываться не рекомендуется."
+
+#: templates/hyiptest/htest_result.html:17
+msgid "The site is probably not a pyramid"
+msgstr "Признаки мошенничества не выявлены"
+
+#: templates/hyiptest/htest_result.html:20
+msgid "This doesn't guarantee the site you are checking is totally legit."
+msgstr "Это не является гарантией, что сайт - не мошеннический."
+
+#: templates/hyiptest/htestprogress_confirm_delete.html:5
+msgid "Delete Test Progress"
+msgstr "Удалить попытку теста"
+
+#: templates/hyiptest/htestprogress_confirm_delete.html:12
+msgid "Are you sure you want to delete the test progress?"
+msgstr "Действительно удалить попытку теста?"
+
+#: templates/hyiptest/htestprogress_confirm_delete.html:17
+msgid "Yes, delete"
+msgstr "Да, удалить"
+
+#: templates/hyiptest/htestprogress_detail.html:5
+msgid "Test Progress Details"
+msgstr "Подробность попытки теста"
+
+#: templates/hyiptest/htestprogress_detail.html:8
+#: templates/hyiptest/htestprogress_list.html:8
+msgid "User"
+msgstr "Пользователь"
+
+#: templates/hyiptest/htestprogress_detail.html:12
+#: templates/hyiptest/htestprogress_list.html:21
+msgid "Status"
+msgstr "Статус"
+
+#: templates/hyiptest/htestprogress_detail.html:14
+#: templates/hyiptest/htestprogress_list.html:36
+msgid "Incomplete"
+msgstr "Не завершен"
+
+#: templates/hyiptest/htestprogress_detail.html:16
+#: templates/hyiptest/htestprogress_list.html:38
+msgid "Completed"
+msgstr "Завершен"
+
+#: templates/hyiptest/htestprogress_detail.html:21
+msgid "Question in progress"
+msgstr "Оставленный вопрос"
+
+#: templates/hyiptest/htestprogress_detail.html:47
+#: templates/hyiptest/htestprogress_list.html:25
+msgid "Actions"
+msgstr "Действия"
+
+#: templates/hyiptest/htestprogress_detail.html:50
+#: templates/hyiptest/htestprogress_list.html:53
+msgid "Resume"
+msgstr "Возобновить"
+
+#: templates/hyiptest/htestprogress_detail.html:53
+msgid "View Result"
+msgstr "Посмотреть результат"
+
+#: templates/hyiptest/htestprogress_detail.html:56
+#: templates/hyiptest/htestprogress_list.html:59
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/hyiptest/htestprogress_list.html:5
+msgid "Previously taken tests"
+msgstr "Предидушие попытки теста"
+
+#: templates/hyiptest/htestprogress_list.html:12
+msgid "Click on an <em>ID</em> to view the details"
+msgstr "Нажмите на <em>ID</em>, чтобы посмотреть детали"
+
+#: templates/hyiptest/htestprogress_list.html:23
+msgid "Started"
+msgstr "Начат"
+
+#: templates/hyiptest/htestprogress_list.html:24
+msgid "Completed / Last Active"
+msgstr "Завершен / Был активен"
+
+#: templates/hyiptest/htestprogress_list.html:56
+msgid "Result"
+msgstr "Результат"
+
+#: templates/hyiptest/htestprogress_list.html:65
+msgid "None found"
+msgstr "Пусто"
+
+#: templates/hyiptest/question_detail.html:5
+msgid "Question Details"
+msgstr "Подробности вопроса"
+
+#: templates/hyiptest/question_detail.html:8
+#: templates/hyiptest/question_detail.html:39
+msgid "Text"
+msgstr "Текст"
+
+#: templates/hyiptest/question_detail.html:12
+#: templates/hyiptest/question_detail.html:41
+msgid "Description"
+msgstr "Описание"
+
+#: templates/hyiptest/question_detail.html:33
+msgid "Answers"
+msgstr "Ответы"
+
+#: templates/hyiptest/question_detail.html:40
+msgid "Risk Score"
+msgstr "Очки Риска"
+
+#: templates/hyiptest/question_detail.html:42
+msgid "Last updated"
+msgstr "Изменено"
+
+#: templates/hyiptest/question_list.html:5
+msgid "Question List"
+msgstr "Список вопросов"
+
+#: templates/hyiptest/question_list.html:13
+msgid "No questions found in the database"
+msgstr "Не найдено вопросов"
+
+#: templates/hyiptest/search_domain.html:12
+msgid "Search"
+msgstr "Поиск"
+
+#: templates/hyiptest/search_domain.html:18
+msgid "Your search"
+msgstr "Вы искали"
+
+#: templates/hyiptest/search_domain.html:42
+msgid "No websites with this domain found in the fraud database"
+msgstr "Не найдено сайтов с таким доменом в базе мошеннических сайтов"
+
+#: templates/registration/logged_out.html:5
+msgid "Logged out"
+msgstr "Вы вышли из аккаунта"
+
+#: templates/registration/login.html:8
+msgid "Your account doesn't have access to this page"
+msgstr "У вашего аккаунта нет доступа к этой странице"
+
+#: templates/registration/login.html:12
+msgid "Please log in to see this page"
+msgstr "Войдите в аккаунт, чтобы посмотреть данную страницу"

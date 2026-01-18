@@ -1,25 +1,28 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Previously taken tests</h1>
+  <h1 class="mt-2">{% translate "Previously taken tests" %}</h1>
 
-  <p>
-    <strong>User:</strong> {{ user }}
+  <p class="mt-3">
+    <strong>{% translate "User" %}:</strong> {{ user }}
   </p>
 
-  <p>
-    Click on an <em>ID</em> to view the details.
+  <p class="mt-3">
+    {% blocktranslate trimmed %}
+      Click on an <em>ID</em> to view the details
+    {% endblocktranslate %}
   </p>
 
   <table class="table">
     <thead>
       <tr>
         <th>ID</th>
-        <th>Status</th>
-        <th>Total Risk Score</th>
-        <th>Started</th>
-        <th>Completed / Last Active</th>
-        <th>Actions</th>
+        <th>{% translate "Status" %}</th>
+        <th>{% translate "Total Risk Score" %}</th>
+        <th>{% translate "Started" %}</th>
+        <th>{% translate "Completed / Last Active" %}</th>
+        <th>{% translate "Actions" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -30,14 +33,14 @@
           </td>
           <td>
             {% if htestprogress.question_in_progress %}
-              Abandoned
+              {% translate "Incomplete" %}
             {% else %}
-              Completed
+              {% translate "Completed" %}
             {% endif %}
           </td>
           <td>
             {% if htestprogress.question_in_progress %}
-              N/A
+              -
             {% else %}
               {{ htestprogress.total_risk_score }}
             {% endif %}
@@ -47,19 +50,19 @@
           <td>
             {% if htestprogress.question_in_progress %}
               <a href="{% url 'htest-question' htestprogress.pk %}"
-                 class="btn btn-success">Resume</a>
+                 class="btn btn-success">{% translate "Resume" %}</a>
             {% else %}
               <a href="{% url 'htest-result' htestprogress.pk %}"
-                 class="btn btn-success">Result</a>
+                 class="btn btn-success">{% translate "Result" %}</a>
             {% endif %}
             <a href="{% url 'htestprogress-delete' htestprogress.pk %}"
-               class="btn btn-danger">Delete</a>
+               class="btn btn-danger">{% translate "Delete" %}</a>
           </td>
         </tr>
       {% empty %}
         <tr>
           <td>
-            <strong>None found</strong>
+            <strong>{% translate "None found" %}</strong>
           </td>
           <td>
             <strong>-</strong>

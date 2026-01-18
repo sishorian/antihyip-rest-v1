@@ -15,17 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = []
-
-from django.contrib import admin
 
 # My apps
 urlpatterns += [
     # hyiptest
     path("", include("hyiptest.urls")),
     path("admin/", admin.site.urls),
+    path("i18n/", include("django.conf.urls.i18n")),
     # api
     path("api/", include("api.urls", "api")),
 ]

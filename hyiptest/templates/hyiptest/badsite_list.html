@@ -1,18 +1,21 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>List of bad sites</h1>
+  <h1 class="mt-2">{% translate "List of bad sites" %}</h1>
 
-  <p>
-    Click on a <em>Name</em> to view the details.
+  <p class="mt-3">
+    {% blocktranslate trimmed %}
+      Click on a <em>Name</em> to view the details
+    {% endblocktranslate %}
   </p>
 
   <table class="table">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Domains</th>
+        <th>{% translate "Name" %}</th>
+        <th>{% translate "Type" %}</th>
+        <th>{% translate "Domains" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -27,7 +30,7 @@
       {% empty %}
         <tr>
           <td>
-            <strong>None found</strong>
+            <strong>{% translate "Empty" %}</strong>
           </td>
           <td>
             <strong>-</strong>

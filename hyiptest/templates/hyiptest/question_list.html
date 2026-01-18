@@ -1,17 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block content %}
-  <h1>Question List</h1>
+  <h1 class="mt-2">{% translate "Question List" %}</h1>
 
-  {% if question_list %}
-    <ul>
-      {% for question in question_list %}
-        <li>
-          <a href="{{ question.get_absolute_url }}">{{ question.text }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No questions found in the database</p>
-  {% endif %}
+  <ul class="mt-3">
+    {% for question in question_list %}
+      <li>
+        <a href="{{ question.get_absolute_url }}">{{ question.text }}</a>
+      </li>
+    {% empty %}
+      <li class="list-unstyled">{% translate "No questions found in the database" %}</li>
+    {% endfor %}
+  </ul>
 {% endblock %}
