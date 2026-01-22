@@ -37,9 +37,9 @@ class SelectAnswerForm(forms.Form):
     Form to select one of the Answers of a Question.
     """
 
-    # label is redundant
     selected_answer = forms.ModelChoiceField(
         queryset=None,
+        label=_("Answers"),
         widget=forms.RadioSelect,
     )
 

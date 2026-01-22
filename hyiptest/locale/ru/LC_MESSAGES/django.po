@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-21 22:31+0300\n"
+"POT-Creation-Date: 2026-01-22 22:08+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,6 +32,10 @@ msgstr "Введите валидное доменное имя"
 #: forms.py:28
 msgid "Domain name"
 msgstr "Доменное имя"
+
+#: forms.py:42 templates/hyiptest/question_detail.html:33
+msgid "Answers"
+msgstr "Ответы"
 
 #: models.py:26
 msgid "Unique identifier"
@@ -342,10 +346,6 @@ msgstr "Текст"
 #: templates/hyiptest/question_detail.html:41
 msgid "Description"
 msgstr "Описание"
-
-#: templates/hyiptest/question_detail.html:33
-msgid "Answers"
-msgstr "Ответы"
 
 #: templates/hyiptest/question_detail.html:40
 msgid "Risk Score"
