@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-18 18:53+0300\n"
+"POT-Creation-Date: 2026-01-21 22:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "%(value)s is not a lowercase string"
 msgstr "Строка %(value)s не в нижнем регистре"
 
-#: forms.py:25 models.py:98
+#: forms.py:25 models.py:97
 msgid "Enter a valid domain name"
 msgstr "Введите валидное доменное имя"
 
@@ -53,59 +53,65 @@ msgstr "Имя сайта или компании, которую сайт пр�
 msgid "What type of fraud it is, e.g. pyramid, scam, etc."
 msgstr "Тип мошенничества, например, пирамида, скам и т.д."
 
-#: models.py:85
+#: models.py:59 templates/hyiptest/badsite_detail.html:24
+#: templates/hyiptest/badsite_list.html:18
+#: templates/hyiptest/search_domain.html:27
+msgid "Domains"
+msgstr "Домены"
+
+#: models.py:84
 msgid "BadSite already exists (lowercase match)"
 msgstr "Такой BadSite уже существует (совпадение по нижнему регистру)"
 
-#: models.py:99
+#: models.py:98
 msgid "Domain name of the BadSite"
 msgstr "Доменное имя BadSite"
 
-#: models.py:106
+#: models.py:105
 msgid "Name of the site this domain belongs to"
 msgstr "Имя сайта, к которому данный домен принадлежит"
 
-#: models.py:135
+#: models.py:134
 msgid "The question itself"
 msgstr "Сам вопрос"
 
-#: models.py:140
+#: models.py:139
 msgid "Explain the question to the user"
 msgstr "Объяснение вопроса пользователю"
 
-#: models.py:155
+#: models.py:154
 msgid "Question already exists (lowercase match)"
 msgstr "Такой Question уже существует (совпадение по нижнему регистру)"
 
-#: models.py:166
+#: models.py:165
 msgid "The answer itself"
 msgstr "Сам ответ"
 
-#: models.py:170
+#: models.py:169
 msgid "What it means, in more words"
 msgstr "Что это означает, более подробно"
 
-#: models.py:177
+#: models.py:176
 msgid "The question it belongs to"
 msgstr "Вопрос, к которому принадлежит"
 
-#: models.py:180
+#: models.py:179
 msgid "Bad points for a site"
 msgstr "Плохие очки для сайта"
 
-#: models.py:203
+#: models.py:202
 msgid "Question currently displayed to the user, null if test is completed"
 msgstr "Вопрос, на котором остановился пользователь, null, если тест завершен"
 
-#: models.py:207
+#: models.py:206
 msgid "Answers the user has selected"
 msgstr "Ответы, которые выбрал пользователь"
 
-#: models.py:212
+#: models.py:211
 msgid "User that started the test"
 msgstr "Пользователь, начавший тест"
 
-#: models.py:216 templates/hyiptest/htestprogress_detail.html:31
+#: models.py:215 templates/hyiptest/htestprogress_detail.html:31
 #: templates/hyiptest/htestprogress_list.html:22
 msgid "Total Risk Score"
 msgstr "Всего Очков Риска"
@@ -186,12 +192,6 @@ msgstr "Создано"
 #: templates/hyiptest/question_detail.html:29
 msgid "Updated at"
 msgstr "Изменено"
-
-#: templates/hyiptest/badsite_detail.html:24
-#: templates/hyiptest/badsite_list.html:18
-#: templates/hyiptest/search_domain.html:27
-msgid "Domains"
-msgstr "Домены"
 
 #: templates/hyiptest/badsite_detail.html:31
 #: templates/hyiptest/htestprogress_detail.html:26

@@ -48,14 +48,15 @@ class BadSite(UUIDTimestampsModel):
         help_text=_("Name of the site or its company behind it"),
     )
 
-    # Can be the exactly same, but shouldn't be "similarly same": "Fraud" and "fraud".
-    # Difficult to enforce.
+    # Can be exactly same, but shouldn't be "similarly same": "Fraud" and "fraud"
+    # Difficult to enforce
     bad_type = models.CharField(
         max_length=50,
         unique=False,
         help_text=_("What type of fraud it is, e.g. pyramid, scam, etc."),
     )
 
+    @admin.display(description=_("Domains"))
     def display_domains(self):
         """
         Create a short string of the first domain plus number of remaining.
@@ -68,8 +69,6 @@ class BadSite(UUIDTimestampsModel):
             case 1:
                 return f"{first_domain}"
         return f"{first_domain}, ...+{num_domains - 1}"
-
-    display_domains.short_description = "Domains"
 
     def __str__(self):
         return str(self.name)
