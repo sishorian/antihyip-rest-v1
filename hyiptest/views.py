@@ -282,7 +282,7 @@ class HtestResultView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         def result_is_bad(result):
-            return result >= 100
+            return result >= 11
 
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)

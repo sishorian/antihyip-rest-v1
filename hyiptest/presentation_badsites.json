@@ -1,0 +1,279 @@
+{
+  "badsites": [
+    {
+      "name": "Суперкопилка",
+      "bad_type": "инвестиции",
+      "domains": ["superkopilka.com"]
+    },
+    {
+      "name": "Prizm",
+      "bad_type": "криптовалюта с парамайнингом",
+      "domains": ["prizm.club"]
+    },
+    {
+      "name": "Roy Club",
+      "bad_type": "хайп",
+      "domains": ["roy.cash"]
+    },
+    {
+      "name": "River Coins",
+      "bad_type": "финансовая пирамида",
+      "domains": ["river-coins.com"]
+    },
+    {
+      "name": "Success Factory",
+      "bad_type": "хайп, финансовая пирамида",
+      "domains": ["uniteam.top"]
+    },
+    {
+      "name": "Hermes Management",
+      "bad_type": "хайп",
+      "domains": ["hermes-ltd.com"]
+    },
+    {
+      "name": "Kryptex",
+      "bad_type": "хайп",
+      "domains": ["kryptex.org"]
+    },
+    {
+      "name": "Finiko",
+      "bad_type": "финансовая пирамида",
+      "domains": ["finiko.ru"]
+    },
+    {
+      "name": "B2b Jewelry",
+      "bad_type": "финансовая пирамида",
+      "domains": ["b2b.jewelry"]
+    },
+    {
+      "name": "Profit Boom",
+      "bad_type": "хайп",
+      "domains": ["profit-boom.pro"]
+    },
+    {
+      "name": "Amir Capital",
+      "bad_type": "финансовая пирамида",
+      "domains": ["amir.capital"]
+    },
+    {
+      "name": "Crowd1",
+      "bad_type": "финансовая пирамида",
+      "domains": ["crowd1.com"]
+    },
+    {
+      "name": "FTC Vin",
+      "bad_type": "хайп, ставки на спорт, криптовалюты",
+      "domains": ["ftc.vin"]
+    },
+    {
+      "name": "Antares",
+      "bad_type": "финансовая пирамида",
+      "domains": ["antares.trade"]
+    },
+    {
+      "name": "Клуб Кент",
+      "bad_type": "kent.club",
+      "domains": ["смесь хайпа, фп и рекламной площадки"]
+    },
+    {
+      "name": "Pi Network",
+      "bad_type": "криптовалюта, майнинг от активности",
+      "domains": ["minepi.com"]
+    },
+    {
+      "name": "Forsage.io",
+      "bad_type": "финансовая пирамида, смарт контракт ETH, TRON",
+      "domains": ["forsage.io"]
+    },
+    {
+      "name": "QubitTech",
+      "bad_type": "хайп, торговые роботы",
+      "domains": ["qubittech.ai"]
+    },
+    {
+      "name": "Bitbon",
+      "bad_type": "криптовалюта Bitbon",
+      "domains": ["bitbon.space"]
+    },
+    {
+      "name": "Befree-Biz",
+      "bad_type": "матричная финансовая пирамида",
+      "domains": ["befree-biz.com"]
+    },
+    {
+      "name": "Bin X System Pro",
+      "bad_type": "классическая финансовая пирамида",
+      "domains": ["bin-x-system.pro"]
+    },
+    {
+      "name": "CrowdWiz",
+      "bad_type": "криптовалюта",
+      "domains": ["crowdwiz.biz"]
+    },
+    {
+      "name": "ГК ТИК",
+      "bad_type": "инвестиции",
+      "domains": ["ti.capital"]
+    },
+    {
+      "name": "Sax Invest",
+      "bad_type": "инвестиции",
+      "domains": ["saxinvest.net"]
+    },
+    {
+      "name": "Artery Network",
+      "bad_type": "собственная криптовалюта",
+      "domains": ["artery.network"]
+    },
+    {
+      "name": "Uranium Cash",
+      "bad_type": "инвестиции",
+      "domains": ["uranium.cash"]
+    },
+    {
+      "name": "Market Bot",
+      "bad_type": "инвестиции в MarketBot",
+      "domains": ["ai.marketing"]
+    },
+    {
+      "name": "Avalon Ltd",
+      "bad_type": "инвестиции в стартапы",
+      "domains": ["avalon.ltd"]
+    },
+    {
+      "name": "Profitbot",
+      "bad_type": "инвестиции в свою криптовалюту",
+      "domains": ["profit-bot.com"]
+    },
+    {
+      "name": "RobPay",
+      "bad_type": "платёжная система",
+      "domains": ["ex.robpay.org"]
+    },
+    {
+      "name": "PlatinCoin",
+      "bad_type": "криптовалюта PlatinCoin",
+      "domains": ["platincoin.com"]
+    },
+    {
+      "name": "Неработа",
+      "bad_type": "игра, матрица и тренинг центр",
+      "domains": ["ne-rabota.com"]
+    },
+    {
+      "name": "FrendeX",
+      "bad_type": "инвестиции",
+      "domains": ["frendex.info"]
+    },
+    {
+      "name": "Symbios Club",
+      "bad_type": "торги по банкротству",
+      "domains": ["symbios.club"]
+    },
+    {
+      "name": "Teqra",
+      "bad_type": "трейдинг криптовалютами и акциями",
+      "domains": ["teqra.com"]
+    },
+    {
+      "name": "TC Group",
+      "bad_type": "инвестиции",
+      "domains": ["tcgroup.ai"]
+    },
+    {
+      "name": "Массмайнинг",
+      "bad_type": "инвестиции в майнинг",
+      "domains": ["massmining.pro"]
+    },
+    {
+      "name": "Tothemars Finance",
+      "bad_type": "инвестиции в криптовалюту",
+      "domains": ["tothemars.finance"]
+    },
+    {
+      "name": "Криптовалюта UMI",
+      "bad_type": "инвестиции в криптовалюту",
+      "domains": ["roy.club"]
+    },
+    {
+      "name": "StormGain",
+      "bad_type": "криптовалютная биржа",
+      "domains": ["stormgain.com"]
+    },
+    {
+      "name": "Lift-me (Живая Очередь)",
+      "bad_type": "финансовая пирамида",
+      "domains": ["lift-me.ru"]
+    },
+    {
+      "name": "Sincere System Group",
+      "bad_type": "инвестиции в токен S-WALLET",
+      "domains": ["s-group.io"]
+    },
+    {
+      "name": "EtherConnect",
+      "bad_type": "инвестиции в хайпы",
+      "domains": ["etherconnect.co"]
+    },
+    {
+      "name": "Tores Coin",
+      "bad_type": "инвестиции в стейкинг",
+      "domains": ["toresbusiness.com"]
+    },
+    {
+      "name": "Rcoin",
+      "bad_type": "инвестиции в стейкинг",
+      "domains": ["rcoin.bet"]
+    },
+    {
+      "name": "IT Smart Money",
+      "bad_type": "хайп проект",
+      "domains": ["itsm-online.ru"]
+    },
+    {
+      "name": "X-Profit",
+      "bad_type": "финансовая пирамида",
+      "domains": ["x-profits.ru"]
+    },
+    {
+      "name": "Spacebot",
+      "bad_type": "стейкинг, система обучения",
+      "domains": ["spacebot.com"]
+    },
+    {
+      "name": "Kripto Future",
+      "bad_type": "хайп проект в сфере трейдинга и майнинга",
+      "domains": ["kriptofuture.com"]
+    },
+    {
+      "name": "Torexo",
+      "bad_type": "хайп проект",
+      "domains": ["torexo.com"]
+    },
+    {
+      "name": "DAO Consensus",
+      "bad_type": "инвестиции в блокчейн",
+      "domains": ["daoconsensus.com"]
+    },
+    {
+      "name": "Grame",
+      "bad_type": "криптовалюта Grame , стейкинг",
+      "domains": ["grame.info"]
+    },
+    {
+      "name": "Dividendo",
+      "bad_type": "финансовая пирамида с пассивным доходом",
+      "domains": ["dividendo.pro"]
+    },
+    {
+      "name": "Antoreum",
+      "bad_type": "хайп проект",
+      "domains": ["antoreum.com"]
+    },
+    {
+      "name": "Goku Market",
+      "bad_type": "криптовалютная биржа с пассивным доходом",
+      "domains": ["gokumarket.com"]
+    }
+  ]
+}

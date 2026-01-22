@@ -669,7 +669,7 @@ class HtestResultViewTest(test.TestCase):
 
         question = Question.objects.create(text="Test question")
         bad_answer = Answer.objects.create(
-            text="Bad test answer", question=question, risk_score=100
+            text="Bad test answer", question=question, risk_score=11
         )
         good_answer = Answer.objects.create(
             text="Good test answer", question=question, risk_score=0
