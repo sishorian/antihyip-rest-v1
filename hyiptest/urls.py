@@ -50,17 +50,17 @@ urlpatterns += [
 # HtestProgress
 urlpatterns += [
     path(
-        "saved-tests/",
+        "previous-tests/",
         views.HtestProgressListView.as_view(),
         name="htestprogress-list",
     ),
     path(
-        "saved-tests/<uuid:pk>/",
+        "previous-tests/<uuid:pk>/",
         views.HtestProgressDetailView.as_view(),
         name="htestprogress-detail",
     ),
     path(
-        "saved-tests/<uuid:pk>/delete/",
+        "previous-tests/<uuid:pk>/delete/",
         views.HtestProgressDeleteView.as_view(),
         name="htestprogress-delete",
     ),

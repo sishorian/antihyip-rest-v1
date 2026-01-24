@@ -175,7 +175,7 @@ class HtestProgressListViewTest(test.TestCase):
 
     def setUp(self):
         self.url = reverse("htestprogress-list")
-        self.correct_url = "/saved-tests/"
+        self.correct_url = "/previous-tests/"
 
     def test_redirects_if_not_logged_in(self):
         response = self.client.get(self.url)
@@ -240,7 +240,7 @@ class HtestProgressDetailViewTest(test.TestCase):
         response = self.client.get(self.progress_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.request["PATH_INFO"], f"/saved-tests/{self.progress.pk}/"
+            response.request["PATH_INFO"], f"/previous-tests/{self.progress.pk}/"
         )
         self.assertTemplateUsed(response, "hyiptest/htestprogress_detail.html")
 
@@ -273,7 +273,7 @@ class HtestProgressDeleteViewTest(test.TestCase):
     def setUp(self):
         self.progress = HtestProgress.objects.get()
         self.url = reverse("htestprogress-delete", kwargs={"pk": self.progress.pk})
-        self.correct_url = f"/saved-tests/{self.progress.pk}/delete/"
+        self.correct_url = f"/previous-tests/{self.progress.pk}/delete/"
 
     def test_redirect_on_no_user(self):
         response = self.client.get(self.url)
