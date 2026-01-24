@@ -45,21 +45,6 @@ urlpatterns += [
         views.QuestionDetailView.as_view(),
         name="question-detail",
     ),
-    path(
-        "questions/create/",
-        views.QuestionCreateView.as_view(),
-        name="question-create",
-    ),
-    path(
-        "questions/<uuid:pk>/update/",
-        views.QuestionUpdateView.as_view(),
-        name="question-update",
-    ),
-    path(
-        "questions/<uuid:pk>/delete/",
-        views.QuestionDeleteView.as_view(),
-        name="question-delete",
-    ),
 ]
 
 # HtestProgress

@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import BadRequest
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -80,24 +80,6 @@ class QuestionListView(generic.ListView):
 
 class QuestionDetailView(generic.DetailView):
     model = Question
-
-
-class QuestionCreateView(PermissionRequiredMixin, generic.CreateView):
-    model = Question
-    fields = ["text", "description"]
-    permission_required = "hyiptest.add_question"
-
-
-class QuestionUpdateView(PermissionRequiredMixin, generic.UpdateView):
-    model = Question
-    fields = ["text", "description"]
-    permission_required = "hyiptest.change_question"
-
-
-class QuestionDeleteView(PermissionRequiredMixin, generic.DeleteView):
-    model = Question
-    success_url = reverse_lazy("question-list")
-    permission_required = "hyiptest.delete_question"
 
 
 # HtestProgress

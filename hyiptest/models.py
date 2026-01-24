@@ -193,6 +193,11 @@ class HtestProgress(UUIDTimestampsModel):
     If test is completed, question_in_progress is null.
     """
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        help_text=_("User that started the test"),
+    )
     question_in_progress = models.ForeignKey(
         Question,
         on_delete=models.CASCADE,
@@ -204,11 +209,6 @@ class HtestProgress(UUIDTimestampsModel):
     )
     selected_answers = models.ManyToManyField(
         Answer, help_text=_("Answers the user has selected")
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        help_text=_("User that started the test"),
     )
 
     @property

@@ -1,10 +1,10 @@
 import logging
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import BadRequest, SuspiciousOperation
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views import generic
-
 from hyiptest.forms import SelectAnswerForm
 from hyiptest.models import HtestProgress, Question
 
@@ -456,3 +456,40 @@ class HtestQuestionView2(LoginRequiredMixin, generic.TemplateView):
             return redirect("htest-question", progress_id=progress.id)
 
         raise BadRequest("Form submitted but neither action was triggered")
+
+
+"""
+    path(
+        "questions/create/",
+        views.QuestionCreateView.as_view(),
+        name="question-create",
+    ),
+    path(
+        "questions/<uuid:pk>/update/",
+        views.QuestionUpdateView.as_view(),
+        name="question-update",
+    ),
+    path(
+        "questions/<uuid:pk>/delete/",
+        views.QuestionDeleteView.as_view(),
+        name="question-delete",
+    ),
+"""
+
+
+class QuestionCreateView(PermissionRequiredMixin, generic.CreateView):
+    model = Question
+    fields = ["text", "description"]
+    permission_required = "hyiptest.add_question"
+
+
+class QuestionUpdateView(PermissionRequiredMixin, generic.UpdateView):
+    model = Question
+    fields = ["text", "description"]
+    permission_required = "hyiptest.change_question"
+
+
+class QuestionDeleteView(PermissionRequiredMixin, generic.DeleteView):
+    model = Question
+    success_url = reverse_lazy("question-list")
+    permission_required = "hyiptest.delete_question"
