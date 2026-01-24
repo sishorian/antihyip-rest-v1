@@ -4,9 +4,10 @@ from rest_framework import routers
 from api import views
 
 router = routers.DefaultRouter()
-router.register(r"questions", views.QuestionViewSet, basename="question")
-router.register(r"badsites", views.BadSiteViewSet, basename="badsite")
-router.register(r"baddomains", views.BadDomainViewSet, basename="baddomain")
+router.register("badsites", views.BadSiteViewSet, basename="badsite")
+router.register("questions", views.QuestionViewSet, basename="question")
+router.register("users", views.UserViewSet, basename="user")
+router.register("test-progresses", views.HtestProgressViewSet, basename="htestprogress")
 
 app_name = "api"
 
