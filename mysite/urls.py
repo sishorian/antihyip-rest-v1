@@ -28,4 +28,5 @@ urlpatterns += [
     path("i18n/", include("django.conf.urls.i18n")),
     # api
     path("api/", include("api.urls", "api")),
+    path("api-auth/", include("rest_framework.urls")),
 ]
