@@ -61,7 +61,10 @@
               </li>
               <li class="nav-item">
                 {% translate "Test" as txt_test %}
-                <a class="nav-link fw-bold" href="{% url 'htest-start' %}">{{ txt_test }}</a>
+                <form method="post" action="{% url 'htest-start' %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link fw-bold">{{ txt_test }}</button>
+                </form>
               </li>
 
               <hr />
@@ -97,8 +100,9 @@
                 </li>
               {% else %}
                 <li class="nav-item">
-                  <a href="{% url 'login' %}?next={{ request.path }}"
-                     class="btn btn-success">{% translate "Log in" %}</a>
+                  {# Using "?next={{ request.path }}" here causes a bug #}
+                  {# when clicking the link from logout view #}
+                  <a href="{% url 'login' %}" class="btn btn-success">{% translate "Log in" %}</a>
                 </li>
               {% endif %}
             </ul>

@@ -7,6 +7,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from django.views.decorators.http import require_POST
 
 from hyiptest.forms import SearchDomainForm, SelectAnswerForm
 from hyiptest.models import BadDomain, BadSite, HtestProgress, Question
@@ -130,6 +131,7 @@ class HtestProgressDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 
 @login_required
+@require_POST
 def htest_start(request):
     """
     View to create new HtestProgress for HtestQuestionView, then redirect to it.

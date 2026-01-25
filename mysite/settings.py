@@ -139,8 +139,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Where to redirect after login
 LOGIN_REDIRECT_URL = "/"
-# Where view requests are redirected for login
-# LOGIN_URL = "/accounts/login/" # default
 
 
 # Set log level to INFO for the app

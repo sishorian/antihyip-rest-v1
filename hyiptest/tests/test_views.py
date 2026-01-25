@@ -316,13 +316,18 @@ class HtestStartViewTest(test.TestCase):
     def setUp(self):
         self.url = reverse("htest-start")
 
-    def test_redirects_to_login_if_not_logged_in(self):
-        response = self.client.get(self.url)
-        self.assertRedirects(response, "/accounts/login/?next=/test/")
-
-    def test_redirects_to_test_if_logged_in(self):
+    def test_405_on_get(self):
         self.client.login(username="testuser", password="123")
         response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_redirects_to_login_if_not_logged_in(self):
+        response = self.client.post(self.url)
+        self.assertRedirects(response, "/accounts/login/?next=/test/")
+
+    def test_redirects_to_test(self):
+        self.client.login(username="testuser", password="123")
+        response = self.client.post(self.url)
 
         self.assertEqual(HtestProgress.objects.count(), 1)  # ensure only 1 was created
         progress = HtestProgress.objects.get()
