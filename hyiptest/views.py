@@ -130,18 +130,21 @@ class HtestProgressDeleteView(LoginRequiredMixin, generic.DeleteView):
 # Just `test_` can be confused with unittest
 
 
+def _create_initial_htestprogress(request):
+    first_question = Question.objects.earliest("created_at")
+    return HtestProgress.objects.create(
+        question_in_progress=first_question, user=request.user
+    )
+
+
 @login_required
 @require_POST
 def htest_start(request):
     """
     View to create new HtestProgress for HtestQuestionView, then redirect to it.
     """
-    first_question = Question.objects.earliest("created_at")
-    progress = HtestProgress.objects.create(
-        question_in_progress=first_question, user=request.user
-    )
+    progress = _create_initial_htestprogress(request)
     logger.debug("Created HtestProgress instance: %s", progress)
-
     return redirect("htest-question", progress_pk=progress.pk)
 
 
@@ -261,13 +264,14 @@ class HtestQuestionView(LoginRequiredMixin, generic.TemplateView):
         raise BadRequest("Form submitted but neither action was triggered")
 
 
+def _test_result_is_bad(result):
+    return result >= 11
+
+
 class HtestResultView(LoginRequiredMixin, generic.TemplateView):
     template_name = "hyiptest/htest_result.html"
 
     def get_context_data(self, **kwargs):
-        def result_is_bad(result):
-            return result >= 11
-
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
 
@@ -277,5 +281,5 @@ class HtestResultView(LoginRequiredMixin, generic.TemplateView):
         if progress.question_in_progress is not None:
             raise BadRequest("Attempt to view result of unfinished test")
 
-        context["result_is_bad"] = result_is_bad(progress.total_risk_score)
+        context["result_is_bad"] = _test_result_is_bad(progress.total_risk_score)
         return context

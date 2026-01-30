@@ -13,4 +13,5 @@ app_name = "api"
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("start-test/", views.HtestStart.as_view(), name="htest-start"),
 ]
