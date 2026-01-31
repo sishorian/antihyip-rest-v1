@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-*0z+_-mo-sc@@trf=4hbk=h79rd^zk23bp$qyuyi4f)%xqp(7j"
+SECRET_KEY = local_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = local_settings.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = local_settings.ALLOWED_HOSTS
 
 
 # Application definition
@@ -142,6 +142,7 @@ LOGIN_REDIRECT_URL = "/"
 
 
 # Set log level to INFO for the app
+log_level = local_settings.LOG_LEVEL
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -165,7 +166,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": local_settings.LOGLEVEL,
+            "level": log_level,
             "class": "logging.StreamHandler",
             "formatter": "simple",
             # To print logs in test, pass `--debug-mode`
@@ -175,7 +176,20 @@ LOGGING = {
     "loggers": {
         "hyiptest": {
             "handlers": ["console"],
-            "level": local_settings.LOGLEVEL,
+            "level": log_level,
         },
     },
 }
+
+# A list of trusted origins for unsafe requests (e.g. POST)
+CSRF_TRUSTED_ORIGINS = local_settings.CSRF_TRUSTED_ORIGINS
+
+# Enforcing SSL/HTTPS
+# Clearing site data in browser may be required to fall back to HTTP in runserver
+SECURE_SSL_REDIRECT = local_settings.SECURE_SSL_REDIRECT
+SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
+CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
+
+# HTTP Strict Transport Security header
+# Don't set until the site is popular
+SECURE_HSTS_SECONDS = 0
